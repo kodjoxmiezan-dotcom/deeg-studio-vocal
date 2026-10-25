@@ -1,0 +1,103 @@
+name: Essai de voix de reference DEEG
+
+on:
+  workflow_dispatch:
+    inputs:
+      texte:
+        description: "Phrase d'essai (vide = fichier narrations/texte.txt)"
+        required: false
+        type: string
+        default: "Bienvenue dans le studio vocal DEEG. Ensemble, construisons une école plus équitable."
+      vitesse:
+        description: "Vitesse de lecture (85 recommande)"
+        required: true
+        type: choice
+        options:
+          - "85"
+          - "90"
+          - "100"
+        default: "85"
+      debut_reference:
+        description: "Seconde du début de l'extrait, 23 pour le long audio Tanguy"
+        required: true
+        type: string
+        default: "23"
+
+permissions:
+  contents: read
+
+jobs:
+  clone-experimental:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      DEEG_TEXT: ${{ inputs.texte }}
+      DEEG_SPEED: ${{ inputs.vitesse }}
+      DEEG_REF_START: ${{ inputs.debut_reference }}
+      DEEG_REF_URL: ${{ secrets.DEEG_TANGUY_REFERENCE_URL }}
+      DEEG_REFERENCE_PATH: .modeles/reference_tanguy.wav
+      HF_HUB_DISABLE_TELEMETRY: "1"
+      OMP_NUM_THREADS: "4"
+    steps:
+      - name: Recuperer le projet
+        uses: actions/checkout@v4
+
+      - name: Installer Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Tester les outils sans modele IA
+        run: |
+          python -m pip install pytest
+          python -m pytest -q tests
+
+      - name: Verifier la configuration de la reference
+        shell: bash
+        run: |
+          if [ -z "${DEEG_REF_URL}" ]; then
+            echo "::error::Secret DEEG_TANGUY_REFERENCE_URL absent. Ajoutez-le dans Settings > Secrets and variables > Actions."
+            exit 1
+          fi
+          if [[ "${DEEG_REF_URL}" != https://* ]]; then
+            echo "::error::URL de reference doit commencer par https://"
+            exit 1
+          fi
+          if ! [[ "${DEEG_REF_START}" =~ ^[0-9]{1,3}$ ]]; then
+            echo "::error::debut_reference doit etre un nombre entier en secondes."
+            exit 1
+          fi
+
+      - name: Recuperer la reference sans la publier
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .modeles
+          curl --fail --silent --show-error --location --retry 2 --max-time 120 \
+            --max-filesize 16000000 --output .modeles/reference_source \
+            "${DEEG_REF_URL}"
+          ffmpeg -hide_banner -loglevel error -y -ss "${DEEG_REF_START}" -t 10 \
+            -i .modeles/reference_source -ar 24000 -ac 1 \
+            -c:a pcm_s16le .modeles/reference_tanguy.wav
+          test -s .modeles/reference_tanguy.wav
+          rm -f .modeles/reference_source
+
+      - name: Installer le moteur de clonage (CPU)
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --upgrade pip
+          python -m pip install --index-url https://download.pytorch.org/whl/cpu \
+            torch==2.6.0+cpu torchaudio==2.6.0+cpu
+          python -m pip install -r requirements-clonage.txt
+
+      - name: Generer la voix francaise
+        run: python scripts/cloner_voix.py
+
+      - name: Publier uniquement les voix generees
+        uses: actions/upload-artifact@v4
+        with:
+          name: essai-voix-tanguy-deeg-${{ github.run_number }}
+          path: sorties-clonage/
+          if-no-files-found: error
+          retention-days: 3
