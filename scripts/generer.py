@@ -59,7 +59,7 @@ def stamp(seconds: float) -> str:
 def estimate_srt(text: str, duration: float, target: Path) -> None:
     """Sous-titres Piper approximatifs : vérifier le minutage avant montage."""
     sentences = [
-        s.strip() for s in re.split(r"(?<=[.!?])\\s+|\\n+", text) if s.strip()
+        s.strip() for s in re.split(r"(?<=[.!?])\s+|\n+", text) if s.strip()
     ]
     if not sentences:
         sentences = [text]
@@ -71,7 +71,7 @@ def estimate_srt(text: str, duration: float, target: Path) -> None:
             end = min(duration, position + duration * weight / total)
             if i == len(sentences):
                 end = duration
-            output.write(f"{i}\\n{stamp(position)} --> {stamp(end)}\\n{sentence}\\n\\n")
+            output.write(f"{i}\n{stamp(position)} --> {stamp(end)}\n{sentence}\n\n")
             position = end
 
 
@@ -124,7 +124,7 @@ def main() -> None:
     else:
         raise ValueError(f"Moteur inconnu : {engine}")
 
-    (OUTPUT / "texte_narre.txt").write_text(text + "\\n", encoding="utf-8")
+    (OUTPUT / "texte_narre.txt").write_text(text + "\n", encoding="utf-8")
     (OUTPUT / "rapport.json").write_text(
         json.dumps({
             "moteur": engine,
@@ -133,7 +133,7 @@ def main() -> None:
             "duree_secondes": round(duration_seconds(wav), 2),
             "sous_titres": "horodatages_du_moteur" if engine == "edge" else "estimes_a_verifier",
             "note": "Les voix ne sont pas des clones de Tanguy de HeyGen.",
-        }, ensure_ascii=False, indent=2) + "\\n",
+        }, ensure_ascii=False, indent=2) + "\n",
         encoding="utf-8",
     )
     print(f"Audio produit : {wav}, {mp3}, {srt}")
