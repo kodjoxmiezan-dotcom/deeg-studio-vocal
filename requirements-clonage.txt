@@ -1,0 +1,2 @@
+# Installer PyTorch CPU avant ce fichier sur GitHub Actions
+chatterbox-tts==0.1.7
