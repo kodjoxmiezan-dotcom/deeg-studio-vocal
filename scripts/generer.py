@@ -79,7 +79,7 @@ def edge(text: str, voice: str, speed: int, mp3: Path, wav: Path, srt: Path) -> 
     if not re.fullmatch(r"fr-[A-Za-z]{2}-[A-Za-z0-9]+Neural", voice):
         raise ValueError("Voix Edge invalide, exemple : fr-FR-HenriNeural")
     run([
-        "edge-tts", "--voice", voice, "--rate", f"{speed - 100:+d}%",
+        "edge-tts", "--voice", voice, f"--rate={speed - 100:+d}%",
         "--text", text, "--write-media", str(mp3), "--write-subtitles", str(srt),
     ])
     run(["ffmpeg", "-y", "-loglevel", "error", "-i", str(mp3),
