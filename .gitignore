@@ -1,0 +1,7 @@
+__pycache__/
+.pytest_cache/
+sorties/
+.modeles/
+*.wav
+*.mp3
+.DS_Store
