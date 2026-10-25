@@ -1,0 +1,81 @@
+name: Studio vocal DEEG
+
+on:
+  workflow_dispatch:
+    inputs:
+      moteur:
+        description: "Moteur : Edge TTS ou Piper TTS"
+        type: choice
+        options:
+          - edge
+          - piper
+        required: true
+        default: edge
+      texte:
+        description: "Texte à narrer (vide = narrations/texte.txt)"
+        required: false
+        type: string
+        default: ""
+      voix:
+        description: "Edge : fr-FR-HenriNeural / Piper : fr_FR-tom-medium"
+        required: false
+        type: string
+        default: fr-FR-HenriNeural
+      vitesse:
+        description: "Vitesse en pourcentage, 85 = lent et posé"
+        required: false
+        type: string
+        default: "85"
+  push:
+    paths:
+      - narrations/texte.txt
+      - scripts/generer.py
+      - .github/workflows/generer-voix.yml
+
+permissions:
+  contents: read
+
+jobs:
+  synthese:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      DEEG_ENGINE: ${{ inputs.moteur || 'edge' }}
+      DEEG_TEXT: ${{ inputs.texte || '' }}
+      DEEG_VOICE: ${{ inputs.voix || 'fr-FR-HenriNeural' }}
+      DEEG_SPEED: ${{ inputs.vitesse || '85' }}
+    steps:
+      - name: Recuperer le code
+        uses: actions/checkout@v4
+      - name: Installer Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Installer et tester
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --upgrade pip
+          python -m pip install pytest
+          if [ "$DEEG_ENGINE" = "edge" ]; then
+            python -m pip install -r requirements-edge.txt
+          elif [ "$DEEG_ENGINE" = "piper" ]; then
+            python -m pip install -r requirements-piper.txt
+          else
+            echo "Moteur inconnu" >&2
+            exit 1
+          fi
+          if ! command -v ffmpeg >/dev/null || ! command -v ffprobe >/dev/null; then
+            sudo apt-get update
+            sudo apt-get install -y ffmpeg
+          fi
+          python -m pytest -q tests
+      - name: Generer MP3 WAV SRT
+        run: python scripts/generer.py
+      - name: Publier les fichiers audio
+        uses: actions/upload-artifact@v4
+        with:
+          name: narration-deeg-${{ github.run_number }}
+          path: sorties/
+          if-no-files-found: error
+          retention-days: 7
