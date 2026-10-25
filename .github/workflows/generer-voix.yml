@@ -30,6 +30,8 @@ on:
     paths:
       - narrations/texte.txt
       - scripts/generer.py
+      - scripts/cloner_voix.py
+      - tests/test_clonage.py
       - .github/workflows/generer-voix.yml
 
 permissions:
