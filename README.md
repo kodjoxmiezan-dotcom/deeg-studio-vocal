@@ -46,3 +46,21 @@ Ce dépôt est **public** : ne publiez ni mots de passe, ni données d’élève
 - [Piper TTS](https://github.com/OHF-Voice/piper1-gpl)
 - [Edge TTS](https://github.com/rany2/edge-tts)
 - [GitHub Actions](https://docs.github.com/en/actions)
+
+
+## Essai de reproduction de la voix Tanguy (expérimental)
+
+Ce module utilise [Chatterbox Multilingual V3](https://github.com/resemble-ai/chatterbox), avec la **voix Tanguy de HeyGen comme référence** uniquement si l'utilisateur dispose d'une autorisation explicite de la réutiliser en dehors de HeyGen. Il ne s'agit pas d'un modèle réentraîné : Chatterbox conditionne chaque génération sur un échantillon de voix.
+
+**La référence vocale ne doit pas être envoyée dans ce dépôt public.** Le workflow la récupère à l'aide d'un secret GitHub nommé `DEEG_TANGUY_REFERENCE_URL`. Il suffit d'utiliser le lien HTTPS direct de l'enregistrement autorisé, puis de procéder ainsi :
+
+1. Ouvrez **Settings → Secrets and variables → Actions → New repository secret**.
+2. **Name :** `DEEG_TANGUY_REFERENCE_URL` ; **Secret :** le lien HTTPS de l'enregistrement Tanguy.
+3. Ouvrez **Actions → Essai de voix de reference DEEG → Run workflow**.
+4. Gardez **vitesse 85** et **début référence 23 secondes** si le fichier contient la narration complète de 72,7 secondes. Pour un court extrait préparé de 10 secondes, choisissez début **0**.
+5. Après une exécution réussie, téléchargez le fichier **essai-voix-tanguy-deeg-…** sous *Artifacts*. Il contient uniquement le MP3 et le WAV générés, le texte de la synthèse et le rapport, **jamais l'extrait vocal de référence**.
+
+⚠️ **Limite de calcul :** le modèle français V3 comporte environ 500 millions de paramètres. Sur l'exécuteur GitHub gratuit **sans GPU**, les dépendances et les modèles sont volumineux, et la synthèse peut être très lente, échouer pour manque de mémoire ou dépasser la limite de durée. Le workflow est donc **manuel uniquement**, pour un essai très court. Une machine avec GPU est recommandée pour la production des longs modules.
+
+**Confidentialité :** ne collez jamais le lien de référence dans un fichier public ou le texte d'un workflow. Ne publiez pas de voix clonée prétendant être un enregistrement authentique d'une personne. Le résultat peut différer de Tanguy, même avec une référence autorisée.
+
