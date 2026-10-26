@@ -64,3 +64,16 @@ Ce module utilise [Chatterbox Multilingual V3](https://github.com/resemble-ai/ch
 
 **Confidentialité :** ne collez jamais le lien de référence dans un fichier public ou le texte d'un workflow. Ne publiez pas de voix clonée prétendant être un enregistrement authentique d'une personne. Le résultat peut différer de Tanguy, même avec une référence autorisée.
 
+
+
+## Comparatif d'optimisation de la voix de référence (26 octobre 2026)
+
+Le workflow manuel **Essai de voix de reference DEEG** génère désormais **deux variantes sur le même texte** (vitesse 85 % par défaut), à partir d'extraits différents de la référence privée :
+
+- **A_fidelite** : priorité à la stabilité du timbre, extrait explicatif, `cfg_weight=0.48` et `exaggeration=0.38`.
+- **B_institutionnel** : expressivité réduite pour un ton pédagogique posé, extrait plus calme, `cfg_weight=0.30` et `exaggeration=0.26`.
+
+Les sorties audio sont `A_fidelite.mp3/.wav` et `B_institutionnel.mp3/.wav`, accompagnées du rapport comparatif. Le texte d'essai par défaut est : « Chaque matin, les élèves arrivent à l'école. Filles et garçons s'y retrouvent. Ont-ils les mêmes chances ? »
+
+Les variantes sont des hypothèses de réglages ; **leur ressemblance exacte n'est pas démontrée**. La sélection du profil définitif dépend de l'écoute par le responsable DEEG. La référence audio n'est jamais publiée dans le dépôt ni dans les artefacts.
+
