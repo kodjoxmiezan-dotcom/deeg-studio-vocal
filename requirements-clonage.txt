@@ -1,2 +1,3 @@
-# Installer PyTorch CPU avant ce fichier sur GitHub Actions
-chatterbox-tts==0.1.7
+# Version officielle de Chatterbox compatible avec Multilingual V3.
+# Revision verrouillee pour eviter les changements non testes de la branche master.
+git+https://github.com/resemble-ai/chatterbox.git@5de7a54aa4e5e2baadb0182dde554908b48b85c2
