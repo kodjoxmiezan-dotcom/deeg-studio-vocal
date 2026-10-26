@@ -71,6 +71,11 @@ jobs:
             exit 1
           fi
 
+      - name: Installer FFmpeg
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y ffmpeg
+
       - name: Recuperer la reference sans la publier
         shell: bash
         run: |
