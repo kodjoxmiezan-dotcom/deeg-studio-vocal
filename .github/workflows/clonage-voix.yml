@@ -4,6 +4,8 @@ on:
   push:
     paths:
       - 'narrations/essai_clonage.txt'
+      - 'scripts/optimiser_tanguy.py'
+      - 'tests/test_optimisation.py'
       - '.github/workflows/clonage-voix.yml'
   workflow_dispatch:
     inputs:
@@ -35,7 +37,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 60
     env:
-      DEEG_TEXT: ${{ inputs.texte || 'Bonjour. Ici, le narrateur DEEG.' }}
+      DEEG_TEXT: ${{ inputs.texte || 'Chaque matin, les élèves arrivent à l’école. Filles et garçons s’y retrouvent. Ont-ils les mêmes chances ?' }}
       DEEG_SPEED: ${{ inputs.vitesse || '85' }}
       DEEG_REF_START: ${{ inputs.debut_reference || '23' }}
       DEEG_REF_URL: ${{ secrets.DEEG_TANGUY_REFERENCE_URL }}
@@ -89,6 +91,14 @@ jobs:
             -i .modeles/reference_source -ar 24000 -ac 1 \
             -c:a pcm_s16le .modeles/reference_tanguy.wav
           test -s .modeles/reference_tanguy.wav
+          ffmpeg -hide_banner -loglevel error -y -ss 10.45 -t 9.75 \
+            -i .modeles/reference_source -ar 24000 -ac 1 \
+            -c:a pcm_s16le .modeles/tanguy_explicatif.wav
+          ffmpeg -hide_banner -loglevel error -y -ss 43.16 -t 9.40 \
+            -i .modeles/reference_source -ar 24000 -ac 1 \
+            -c:a pcm_s16le .modeles/tanguy_pose.wav
+          test -s .modeles/tanguy_explicatif.wav
+          test -s .modeles/tanguy_pose.wav
           rm -f .modeles/reference_source
 
       - name: Installer le moteur de clonage (CPU)
@@ -107,12 +117,12 @@ jobs:
           PY
 
       - name: Generer la voix francaise
-        run: python scripts/cloner_voix.py
+        run: python scripts/optimiser_tanguy.py
 
       - name: Publier uniquement les voix generees
         uses: actions/upload-artifact@v4
         with:
-          name: essai-voix-tanguy-deeg-${{ github.run_number }}
-          path: sorties-clonage/
+          name: comparatif-tanguy-deeg-${{ github.run_number }}
+          path: sorties-optimisation/
           if-no-files-found: error
           retention-days: 3
