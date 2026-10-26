@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - 'narrations/essai_clonage.txt'
+      - '.github/workflows/clonage-voix.yml'
   workflow_dispatch:
     inputs:
       texte:
@@ -34,7 +35,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 60
     env:
-      DEEG_TEXT: ${{ inputs.texte }}
+      DEEG_TEXT: ${{ inputs.texte || 'Bonjour. Ici, le narrateur DEEG.' }}
       DEEG_SPEED: ${{ inputs.vitesse || '85' }}
       DEEG_REF_START: ${{ inputs.debut_reference || '23' }}
       DEEG_REF_URL: ${{ secrets.DEEG_TANGUY_REFERENCE_URL }}
@@ -98,6 +99,12 @@ jobs:
           python -m pip install --index-url https://download.pytorch.org/whl/cpu \
             torch==2.6.0+cpu torchaudio==2.6.0+cpu
           python -m pip install -r requirements-clonage.txt
+          python - <<'PY'
+          from inspect import signature
+          from chatterbox.mtl_tts import ChatterboxMultilingualTTS
+          assert 't3_model' in signature(ChatterboxMultilingualTTS.from_pretrained).parameters, "Cette revision n'est pas compatible avec V3."
+          print("Chatterbox Multilingual V3 : API compatible")
+          PY
 
       - name: Generer la voix francaise
         run: python scripts/cloner_voix.py
