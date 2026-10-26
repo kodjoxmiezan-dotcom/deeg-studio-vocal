@@ -1,6 +1,9 @@
 name: Essai de voix de reference DEEG
 
 on:
+  push:
+    paths:
+      - 'narrations/essai_clonage.txt'
   workflow_dispatch:
     inputs:
       texte:
@@ -32,8 +35,8 @@ jobs:
     timeout-minutes: 60
     env:
       DEEG_TEXT: ${{ inputs.texte }}
-      DEEG_SPEED: ${{ inputs.vitesse }}
-      DEEG_REF_START: ${{ inputs.debut_reference }}
+      DEEG_SPEED: ${{ inputs.vitesse || '85' }}
+      DEEG_REF_START: ${{ inputs.debut_reference || '23' }}
       DEEG_REF_URL: ${{ secrets.DEEG_TANGUY_REFERENCE_URL }}
       DEEG_REFERENCE_PATH: .modeles/reference_tanguy.wav
       HF_HUB_DISABLE_TELEMETRY: "1"
