@@ -1,0 +1,59 @@
+name: DEEG Module 3 - 21 narrations voix B
+on:
+  push:
+    paths:
+      - '.github/workflows/module3-voix-b.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  voix-deeg-b:
+    name: "Voix B - lot ${{ matrix.part }}"
+    runs-on: ubuntu-latest
+    timeout-minutes: 65
+    strategy:
+      fail-fast: false
+      matrix:
+        part: [1, 2, 3]
+    env:
+      M03_PART: "${{ matrix.part }}"
+      DEEG_REF_URL: "${{ secrets.DEEG_TANGUY_REFERENCE_URL }}"
+      HF_HUB_DISABLE_TELEMETRY: "1"
+      OMP_NUM_THREADS: "4"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verifier secret prive et outils
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "${DEEG_REF_URL}"
+          [[ "${DEEG_REF_URL}" == https://* ]]
+          command -v ffmpeg
+          command -v ffprobe
+      - name: Recuperer reference privee de la voix B
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .modeles
+          curl -fsSL --retry 2 --max-time 120 --max-filesize 16000000 -o .modeles/source_privee "${DEEG_REF_URL}"
+          ffmpeg -hide_banner -loglevel error -y -ss 43.16 -t 9.40 -i .modeles/source_privee -ar 24000 -ac 1 -c:a pcm_s16le .modeles/tanguy_pose.wav
+          test -s .modeles/tanguy_pose.wav
+          rm -f .modeles/source_privee
+      - name: Installer Chatterbox V3 sur CPU
+        shell: bash
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install --index-url https://download.pytorch.org/whl/cpu torch==2.6.0+cpu torchaudio==2.6.0+cpu
+          python -m pip install -r requirements-clonage.txt
+      - name: Generer les 7 voix off de ce lot
+        run: python scripts/generer_module3_voixB.py
+      - name: Publier seulement les sorties (jamais la reference)
+        uses: actions/upload-artifact@v4
+        with:
+          name: deeg-m03-voix-B-lot-${{ matrix.part }}
+          path: sorties-module3/partie_${{ matrix.part }}/
+          if-no-files-found: error
+          retention-days: 7
