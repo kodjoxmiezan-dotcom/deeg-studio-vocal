@@ -31,8 +31,10 @@ jobs:
           set -euo pipefail
           test -n "${DEEG_REF_URL}"
           [[ "${DEEG_REF_URL}" == https://* ]]
-          command -v ffmpeg
-          command -v ffprobe
+      - name: Installer FFmpeg
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y ffmpeg
       - name: Recuperer reference privee de la voix B
         shell: bash
         run: |
