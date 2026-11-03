@@ -1,10 +1,11 @@
-"""Synthèse vocale DEEG : MP3, WAV et SRT via Edge TTS ou Piper TTS."""
+"""Synthèse vocale DEEG : MP3, WAV et SRT via Edge TTS, Piper TTS ou une référence vidéo privée."""
 
 from __future__ import annotations
 
 import json
 import os
 import re
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -107,6 +108,29 @@ def piper(text: str, voice: str, speed: int, mp3: Path, wav: Path, srt: Path) ->
     return voice
 
 
+def voix_video(text: str, speed: int, mp3: Path, wav: Path, srt: Path) -> str:
+    """Synthèse avec la référence privée de la vidéo, sans réentraînement."""
+    if len(text) > 500:
+        raise ValueError("Voix vidéo : 500 caractères maximum par essai CPU.")
+    reference = Path(os.getenv(
+        "DEEG_REFERENCE_PATH", str(MODELS / "reference_video.wav")
+    )).resolve()
+    if not reference.is_file():
+        raise FileNotFoundError(
+            "Référence privée absente. Configurer le secret "
+            "DEEG_VIDEO_VOICE_REFERENCE_URL ou utiliser un fichier WAV local."
+        )
+    commande = [sys.executable, str(ROOT / "scripts" / "cloner_voix.py")]
+    environnement = dict(os.environ, DEEG_TEXT=text, DEEG_SPEED=str(speed),
+                         DEEG_REFERENCE_PATH=str(reference))
+    subprocess.run(commande, check=True, env=environnement)
+    resultat = ROOT / "sorties-clonage"
+    shutil.copyfile(resultat / "narrateur_deeg.wav", wav)
+    shutil.copyfile(resultat / "narrateur_deeg.mp3", mp3)
+    estimate_srt(text, duration_seconds(wav), srt)
+    return "deeg_voix_video_2026_11"
+
+
 def main() -> None:
     OUTPUT.mkdir(parents=True, exist_ok=True)
     engine = os.getenv("DEEG_ENGINE", "edge").strip().lower()
@@ -121,6 +145,8 @@ def main() -> None:
         actual_voice = edge(text, voice, speed, mp3, wav, srt)
     elif engine == "piper":
         actual_voice = piper(text, voice, speed, mp3, wav, srt)
+    elif engine == "voix_video":
+        actual_voice = voix_video(text, speed, mp3, wav, srt)
     else:
         raise ValueError(f"Moteur inconnu : {engine}")
 
@@ -132,7 +158,10 @@ def main() -> None:
             "vitesse_pct": speed,
             "duree_secondes": round(duration_seconds(wav), 2),
             "sous_titres": "horodatages_du_moteur" if engine == "edge" else "estimes_a_verifier",
-            "note": "Les voix ne sont pas des clones de Tanguy de HeyGen.",
+            "note": ("Synthèse conditionnée par une référence privée de la vidéo ; "
+                     "fidelité à contrôler à l’écoute. Aucun modèle réentraîné."
+                     if engine == "voix_video" else
+                     "Les moteurs Edge et Piper ne reproduisent pas la voix Tanguy de HeyGen."),
         }, ensure_ascii=False, indent=2) + "\n",
         encoding="utf-8",
     )
