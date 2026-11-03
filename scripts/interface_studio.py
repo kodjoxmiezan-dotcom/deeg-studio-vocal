@@ -16,6 +16,7 @@ ROOT = SCRIPTS.parent
 sys.path.insert(0, str(SCRIPTS))
 
 from produire_voix_video_locale import produire, verifier_texte
+from preparer_reference_video import preparer
 
 OUTPUT = ROOT / "sorties-video-local"
 TEXTE_DEFAUT = (
@@ -48,6 +49,26 @@ def diagnostiquer(source: str | None, texte: str, debut: float, vitesse: int) ->
                 "controle_humain": "Écouter la source : une seule voix et aucune musique."}
     except Exception as exc:
         return {"etat": "Échec du diagnostic", "erreur": str(exc)}
+
+
+
+def previsualiser_reference(source: str | None, debut: float) -> tuple[str, str | None, dict]:
+    """Écouter les 10 secondes qui serviront à la synthèse vocale."""
+    sortie = OUTPUT / "reference_previsualisation.wav"
+    sortie.unlink(missing_ok=True)
+    try:
+        chemin = _chemin(source)
+        stats = preparer(chemin, sortie, float(debut), 10.0)
+        return (
+            "✅ Extrait préparé. Écoutez-le pour vérifier l'absence de musique, de bruit et de voix concurrentes.",
+            str(sortie),
+            {"extrait_secondes": round(stats["duree_secondes"], 2),
+             "niveau_rms": round(stats["rms_normalise"], 4),
+             "part_ecretee": round(stats["part_ecretee"], 6),
+             "controle": "La qualité de la voix doit être évaluée à l'écoute."},
+        )
+    except Exception as exc:
+        return "❌ Prévisualisation impossible : " + str(exc), None, {}
 
 
 def generer(
@@ -140,9 +161,11 @@ def creer_interface():
                 )
                 with gr.Row():
                     btn_diagnostic = gr.Button("🔍 Vérifier la référence")
+                    btn_previsualisation = gr.Button("▶ Écouter les 10 secondes choisies")
                     btn_generer = gr.Button("🎧 Générer la narration", variant="primary")
                 resultat = gr.Markdown("Lancez un diagnostic ou la synthèse.")
                 diagnostic = gr.JSON(label="Rapport technique")
+                previsualisation = gr.Audio(label="Référence choisie : écouter avant génération", interactive=False)
         with gr.Row():
             ecoute = gr.Audio(label="Écouter la narration produite",
                               interactive=False)
@@ -152,6 +175,12 @@ def creer_interface():
             fn=diagnostiquer,
             inputs=[audio, texte, debut, vitesse],
             outputs=[diagnostic],
+        )
+        btn_previsualisation.click(
+            fn=previsualiser_reference,
+            inputs=[audio, debut],
+            outputs=[resultat, previsualisation, diagnostic],
+            concurrency_limit=1,
         )
         btn_generer.click(
             fn=generer,
