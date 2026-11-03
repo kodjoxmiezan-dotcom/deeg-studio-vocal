@@ -103,6 +103,9 @@ def creer_interface():
                  background: linear-gradient(90deg, #fff6e8, #f7fcf8);}
     .deeg-titre h1 {color: #1c4835;}
     """
+    source_initiale = os.getenv("DEEG_REFERENCE_INITIALE", "").strip()
+    if source_initiale and not Path(source_initiale).is_file():
+        source_initiale = ""
     with gr.Blocks(title="Studio Vocal DEEG — Voix vidéo", css=couleurs) as demo:
         gr.HTML('<div class="deeg-titre"><h1>🎙️ STUDIO VOCAL DEEG</h1>'
                 '<p>Création de narrations en français à partir de votre '
@@ -119,6 +122,7 @@ def creer_interface():
                     label="1. Sélectionner la vidéo originale (20 s) ou un fichier audio",
                     file_types=[".mp4", ".mov", ".wav", ".mp3", ".m4a", ".aac"],
                     type="filepath",
+                    value=source_initiale or None,
                 )
                 debut = gr.Slider(0, 60, value=0, step=1,
                                   label="Début de l'extrait de référence (10 s)")
