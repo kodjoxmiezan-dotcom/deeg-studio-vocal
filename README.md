@@ -92,3 +92,16 @@ cette voix. Une exécution réussie remet **MP3, WAV et SRT** (sous-titrage esti
 La référence originale n'est ni commitée ni jointe aux fichiers générés.
 
 Cet ajout ne modifie pas le fonctionnement des moteurs existants `edge` et `piper`.
+
+## Générer une voix directement depuis la vidéo sur votre ordinateur
+
+La nouvelle commande `scripts/produire_voix_video_locale.py` utilise directement
+la vidéo ou un fichier audio local : **aucun lien de téléchargement ni secret
+GitHub n'est nécessaire**. Elle réalise d'abord l'extraction privée de dix
+secondes, puis la synthèse Chatterbox V3 (après installation initiale du moteur).
+Un diagnostic sans modèle est disponible avec `--diagnostic`.
+
+Lancez `outils/lancer_voix_video_mac.command` avec le chemin de la vidéo,
+ou suivez le [guide détaillé](GUIDE_REFERENCE_VIDEO.md#méthode-directe-sur-ordinateur--aucun-secret-github).
+Les résultats sont exportés dans `sorties-video-local/` et sont ignorés par Git.
+La reproduction d'une voix nécessite l'autorisation appropriée.

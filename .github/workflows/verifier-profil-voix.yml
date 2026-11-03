@@ -5,7 +5,9 @@ on:
     paths:
       - 'scripts/preparer_reference_video.py'
       - 'scripts/generer.py'
-      - 'tests/test_voix_video_studio.py'
+      - 'scripts/produire_voix_video_locale.py'
+      - 'tests/test_production_locale_video.py'
+      - 'tests/test_voix_video_studio.py tests/test_production_locale_video.py'
       - 'tests/test_preparer_reference_video.py'
       - '.github/workflows/verifier-profil-voix.yml'
   pull_request:

@@ -5,3 +5,10 @@ sorties/
 *.wav
 *.mp3
 .DS_Store
+# Sorties locales : ne pas publier les narrations ou informations privees
+sorties-clonage/
+sorties-optimisation/
+sorties-video-local/
+sorties-module*/
+sorties-questions*/
+.venv/
