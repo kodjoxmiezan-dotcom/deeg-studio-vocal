@@ -43,6 +43,27 @@ jobs:
             sudo apt-get install -y ffmpeg
           fi
           ffmpeg -version | head -1
+      - name: Installer l'interface française Gradio
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install -r requirements-interface.txt
+
+      - name: Vérifier que l'interface se construit sans démarrer de serveur
+        shell: bash
+        env:
+          GRADIO_ANALYTICS_ENABLED: "False"
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import sys
+          sys.path.insert(0, "scripts")
+          from interface_studio import creer_interface
+          application = creer_interface()
+          assert application is not None
+          print("Interface locale construite avec succès.")
+          PY
+
       - name: Tests sans reference personnelle ni modele IA
         shell: bash
         run: |
