@@ -17,6 +17,7 @@ Une modification de `narrations/texte.txt` dans GitHub déclenche aussi la gén�
 | --- | --- | --- | --- | --- |
 | **Edge TTS** | `fr-FR-HenriNeural` | MP3 + WAV | minutage fourni par le moteur | Internet requis |
 | **Piper TTS** | `fr_FR-tom-medium` | MP3 + WAV | estimation à vérifier | modèle téléchargé avant usage, puis possible hors ligne |
+| **Voix vidéo DEEG** | `deeg_voix_video_2026_11` | MP3 + WAV | estimation à vérifier | Chatterbox V3, référence privée HTTPS requise |
 
 **Important :** ce projet ne reproduit **pas** la voix Tanguy de HeyGen. L’accès Edge TTS utilise le service en ligne de Microsoft Edge via une bibliothèque communautaire non officielle ; disponibilité et restrictions peuvent évoluer.
 
@@ -80,3 +81,14 @@ Les variantes sont des hypothèses de réglages ; **leur ressemblance exacte n'e
 ## Nouvelle voix issue d'une vidéo (novembre 2026)
 
 Un profil distinct est prêt pour un essai de synthèse vocale conditionnée sur un extrait privé de 10 secondes, sans modifier les voix des modules existants. Consultez [le guide d'intégration](GUIDE_REFERENCE_VIDEO.md) avant de configurer le secret `DEEG_VIDEO_VOICE_REFERENCE_URL` et de lancer le workflow **DEEG - Profil vocal depuis video (prive)**. Cette procédure ne constitue pas un réentraînement de modèle.
+
+### Utiliser cette voix dans le Studio vocal principal
+
+Le moteur `voix_video` est également disponible sous **Actions → Studio vocal DEEG → Run workflow**.
+Après avoir configuré le secret `DEEG_VIDEO_VOICE_REFERENCE_URL` décrit dans le guide,
+choisir **moteur : voix_video**, saisir une phrase de **500 caractères maximum**, conserver
+la vitesse **85**, le début de référence **0**, puis confirmer l'autorisation de reproduire
+cette voix. Une exécution réussie remet **MP3, WAV et SRT** (sous-titrage estimé).
+La référence originale n'est ni commitée ni jointe aux fichiers générés.
+
+Cet ajout ne modifie pas le fonctionnement des moteurs existants `edge` et `piper`.
