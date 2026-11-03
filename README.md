@@ -105,3 +105,30 @@ Lancez `outils/lancer_voix_video_mac.command` avec le chemin de la vidéo,
 ou suivez le [guide détaillé](GUIDE_REFERENCE_VIDEO.md#méthode-directe-sur-ordinateur--aucun-secret-github).
 Les résultats sont exportés dans `sorties-video-local/` et sont ignorés par Git.
 La reproduction d'une voix nécessite l'autorisation appropriée.
+
+## Interface graphique locale (français)
+
+Le Studio Vocal DEEG dispose également d'une **interface dans votre navigateur**,
+sans envoyer la voix de référence sur un serveur distant. Sur un ordinateur
+équipé de Python 3.11 et FFmpeg :
+
+```bash
+python3.11 -m venv .venv
+source .venv/bin/activate
+python -m pip install -r requirements-interface.txt
+python -m pip install -r requirements-clonage.txt
+python scripts/interface_studio.py
+```
+
+Sur Mac, exécutez `outils/ouvrir_studio_mac.command` (prérequis Python 3.11
+et FFmpeg). L'interface s'ouvre à `http://127.0.0.1:7860`.
+Lancez **Vérifier la référence**, renseignez un texte français, confirmez
+les droits de reproduction vocale et cliquez sur **Générer la narration**.
+Écoutez le résultat puis téléchargez les MP3, WAV, SRT et rapport de diagnostic.
+L'interface ne partage pas son accès à Internet : elle écoute sur
+`127.0.0.1` et la fonctionnalité de partage Gradio est désactivée.
+
+**Important** : les fichiers sont générés uniquement si les dépendances et
+les poids Chatterbox Multilingual V3 sont installés et que l'ordinateur
+dispose de suffisamment de mémoire. La première utilisation nécessite
+une connexion pour installer le modèle. Les sous-titres sont estimatifs.
