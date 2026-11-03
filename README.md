@@ -132,3 +132,16 @@ L'interface ne partage pas son accès à Internet : elle écoute sur
 les poids Chatterbox Multilingual V3 sont installés et que l'ordinateur
 dispose de suffisamment de mémoire. La première utilisation nécessite
 une connexion pour installer le modèle. Les sous-titres sont estimatifs.
+
+
+### Vérifier et écouter la référence avant la synthèse
+
+Dans l'interface locale, sélectionnez la vidéo d'origine puis utilisez
+**▶ Écouter les 10 secondes choisies**. Le studio extrait uniquement les dix
+secondes demandées et les lit dans le navigateur local : cela facilite le
+choix d'un passage clair, sans musique et avec une seule voix.
+
+La prévisualisation est conservée seulement sur l'ordinateur, sous
+`sorties-video-local/reference_previsualisation.wav` (dossier ignoré par Git).
+L'ancien aperçu est supprimé avant chaque nouvel essai, même si la nouvelle
+extraction échoue. Les tests automatiques contrôlent ce comportement.
