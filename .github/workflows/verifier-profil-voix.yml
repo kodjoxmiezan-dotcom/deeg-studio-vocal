@@ -1,0 +1,44 @@
+name: Verification du profil vocal video DEEG
+
+on:
+  push:
+    paths:
+      - 'scripts/preparer_reference_video.py'
+      - 'tests/test_preparer_reference_video.py'
+      - '.github/workflows/verifier-profil-voix.yml'
+  pull_request:
+    paths:
+      - 'scripts/preparer_reference_video.py'
+      - 'tests/test_preparer_reference_video.py'
+      - '.github/workflows/verifier-profil-voix.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test-preparation-audio:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Recuperer le depot
+        uses: actions/checkout@v4
+      - name: Installer Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Installer et verifier FFmpeg
+        shell: bash
+        run: |
+          set -euo pipefail
+          if ! command -v ffmpeg >/dev/null || ! command -v ffprobe >/dev/null; then
+            sudo apt-get update -qq
+            sudo apt-get install -y ffmpeg
+          fi
+          ffmpeg -version | head -1
+      - name: Tests sans reference personnelle ni modele IA
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install pytest
+          python -m pytest -q tests/test_preparer_reference_video.py tests/test_clonage.py
