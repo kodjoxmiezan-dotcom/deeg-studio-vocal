@@ -57,3 +57,51 @@ validation puis d'intégration aux pipelines de production sera nécessaire.
 - Les calculs Chatterbox peuvent être lents et éventuellement échouer
   sur un exécuteur GitHub Actions sans GPU. Le fonctionnement du moteur
   n'est pas garanti par les seuls tests du préparateur.
+
+## Méthode directe sur ordinateur : aucun secret GitHub
+
+Pour produire une nouvelle voix **sans exposer votre vidéo** et sans renseigner
+le secret GitHub `DEEG_VIDEO_VOICE_REFERENCE_URL`, une commande locale est
+maintenant disponible. Le modèle Chatterbox doit être téléchargé une première
+fois depuis Internet ; il n'est pas intégré au dépôt.
+
+**Pré-requis** : Python 3.11, FFmpeg, Git, mémoire suffisante et accès Internet
+pour la première installation. Sur Mac, ouvrez le Terminal à la racine du dépôt :
+
+```bash
+python3.11 -m venv .venv
+source .venv/bin/activate
+python -m pip install -r requirements-clonage.txt
+python scripts/produire_voix_video_locale.py \
+    --source "/chemin/vers/gemini_generated_video_24930477.mp4" \
+    --diagnostic
+```
+
+Le diagnostic contrôle la source et l'extrait de 10 secondes sans charger le
+modèle IA. Pour créer une narration en français, après confirmation de votre
+autorisation de reproduire la voix :
+
+```bash
+python scripts/produire_voix_video_locale.py \
+    --source "/chemin/vers/gemini_generated_video_24930477.mp4" \
+    --texte "Bienvenue dans ATHÉNÉE. Ensemble, renforçons nos pratiques pédagogiques." \
+    --vitesse 85 --debut 0 --autorisation
+```
+
+Fichiers produits dans `sorties-video-local/` :
+- `DEEG_voix_video.wav`
+- `DEEG_voix_video.mp3`
+- `DEEG_voix_video.srt` : sous-titres approximatifs à vérifier
+- `texte_narre.txt`, `rapport.json`
+
+Vous pouvez également lancer `outils/lancer_voix_video_mac.command` depuis
+la racine du dépôt en lui donnant en argument le chemin local de la vidéo ;
+il demande la confirmation d'autorisation et installe les dépendances
+lors de la première utilisation.
+
+**Limites vérifiables** : les tests automatisés contrôlent la préparation
+audio, la confidentialité des chemins et les sorties simulées. Ils ne
+prouvent pas la ressemblance du timbre ni la réussite de l'inférence réelle
+sur votre matériel. Sans téléchargement du modèle Chatterbox, la
+génération ne peut pas s'exécuter. Le dossier `sorties-video-local/`
+est exclu de Git pour éviter les publications accidentelles.
