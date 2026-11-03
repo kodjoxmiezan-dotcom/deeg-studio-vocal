@@ -7,6 +7,10 @@ if ! command -v python3.11 >/dev/null 2>&1; then
   echo "Python 3.11 requis. Installez-le puis recommencez."
   exit 1
 fi
+if ! command -v git >/dev/null 2>&1; then
+  echo "Git requis pour installer Chatterbox. Sur Mac : xcode-select --install"
+  exit 1
+fi
 if ! command -v ffmpeg >/dev/null 2>&1 || ! command -v ffprobe >/dev/null 2>&1; then
   echo "FFmpeg/FFprobe requis. Sur Mac avec Homebrew : brew install ffmpeg"
   exit 1
@@ -20,6 +24,11 @@ python -m pip install --upgrade pip
 if [[ ! -f .venv/.deeg_ui_pret ]]; then
   python -m pip install -r requirements-interface.txt
   touch .venv/.deeg_ui_pret
+fi
+if [[ ! -f .venv/.deeg_clone_pret ]]; then
+  echo "Première installation de Chatterbox V3 (modèle vocal) : connexion requise."
+  python -m pip install -r requirements-clonage.txt
+  touch .venv/.deeg_clone_pret
 fi
 
 printf "\nStudio vocal local : http://127.0.0.1:7860\n"
