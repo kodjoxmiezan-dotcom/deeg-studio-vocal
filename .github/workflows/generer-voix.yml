@@ -4,11 +4,12 @@ on:
   workflow_dispatch:
     inputs:
       moteur:
-        description: "Moteur : Edge TTS ou Piper TTS"
+        description: "Moteur : Edge TTS, Piper TTS ou nouvelle voix video DEEG"
         type: choice
         options:
           - edge
           - piper
+          - voix_video
         required: true
         default: edge
       texte:
@@ -21,6 +22,16 @@ on:
         required: false
         type: string
         default: fr-FR-HenriNeural
+      debut_reference:
+        description: "Voix vidéo : début de l'extrait dans la source 20s (0 à 10)"
+        required: false
+        type: string
+        default: "0"
+      autorisation:
+        description: "Voix vidéo : j'ai le droit de reproduire la voix de cette référence"
+        type: boolean
+        required: false
+        default: false
       vitesse:
         description: "Vitesse en pourcentage, 85 = lent et posé"
         required: false
@@ -40,12 +51,17 @@ permissions:
 jobs:
   synthese:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 90
     env:
       DEEG_ENGINE: ${{ inputs.moteur || 'edge' }}
       DEEG_TEXT: ${{ inputs.texte || '' }}
       DEEG_VOICE: ${{ inputs.voix || 'fr-FR-HenriNeural' }}
       DEEG_SPEED: ${{ inputs.vitesse || '85' }}
+      DEEG_REF_START: ${{ inputs.debut_reference || '0' }}
+      DEEG_AUTORISATION: ${{ inputs.autorisation || 'false' }}
+      DEEG_REF_URL: ${{ secrets.DEEG_VIDEO_VOICE_REFERENCE_URL }}
+      DEEG_REFERENCE_PATH: .modeles/reference_video.wav
+      HF_HUB_DISABLE_TELEMETRY: "1"
     steps:
       - name: Recuperer le code
         uses: actions/checkout@v4
@@ -63,6 +79,18 @@ jobs:
             python -m pip install -r requirements-edge.txt
           elif [ "$DEEG_ENGINE" = "piper" ]; then
             python -m pip install -r requirements-piper.txt
+          elif [ "$DEEG_ENGINE" = "voix_video" ]; then
+            if [ "$DEEG_AUTORISATION" != "true" ]; then
+              echo "::error::Autorisation explicite requise pour cette voix."
+              exit 1
+            fi
+            if [ -z "$DEEG_REF_URL" ] || [[ "$DEEG_REF_URL" != https://* ]]; then
+              echo "::error::Ajouter le secret DEEG_VIDEO_VOICE_REFERENCE_URL."
+              exit 1
+            fi
+            python -m pip install --index-url https://download.pytorch.org/whl/cpu \
+              torch==2.6.0+cpu torchaudio==2.6.0+cpu
+            python -m pip install -r requirements-clonage.txt
           else
             echo "Moteur inconnu" >&2
             exit 1
@@ -72,6 +100,25 @@ jobs:
             sudo apt-get install -y ffmpeg
           fi
           python -m pytest -q tests
+      - name: Preparer la reference vocale video en prive
+        if: env.DEEG_ENGINE == 'voix_video'
+        shell: bash
+        run: |
+          set -euo pipefail
+          if ! [[ "$DEEG_REF_START" =~ ^([0-9]+)([.][0-9]+)?$ ]]; then
+            echo "::error::Le debut de reference doit etre un nombre valide."
+            exit 1
+          fi
+          umask 077
+          mkdir -p .modeles
+          curl --proto '=https' --proto-redir '=https' \
+            --fail --silent --show-error --location --retry 2 --max-time 120 \
+            --max-filesize 20000000 --output .modeles/source_privee "$DEEG_REF_URL"
+          python scripts/preparer_reference_video.py \
+            --source .modeles/source_privee \
+            --sortie "$DEEG_REFERENCE_PATH" \
+            --debut "$DEEG_REF_START" --longueur 10
+          rm -f .modeles/source_privee
       - name: Generer MP3 WAV SRT
         run: python scripts/generer.py
       - name: Publier les fichiers audio
@@ -81,3 +128,7 @@ jobs:
           path: sorties/
           if-no-files-found: error
           retention-days: 7
+      - name: Effacer le fichier vocal prive
+        if: always()
+        shell: bash
+        run: rm -f .modeles/source_privee .modeles/reference_video.wav
