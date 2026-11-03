@@ -1,0 +1,127 @@
+name: DEEG - Profil vocal depuis video (prive)
+
+on:
+  workflow_dispatch:
+    inputs:
+      texte:
+        description: "Court texte français d'essai (500 caractères max)"
+        type: string
+        required: true
+        default: "Bienvenue dans le studio vocal DEEG. Une école équitable commence par une attention à chaque élève."
+      vitesse:
+        description: "Vitesse de lecture (85 = posée)"
+        type: choice
+        options:
+          - "85"
+          - "90"
+          - "100"
+        default: "85"
+      debut_reference:
+        description: "Début de l'extrait original en secondes (0 pour les 10 premières secondes)"
+        type: string
+        required: true
+        default: "0"
+      autorisation:
+        description: "Je suis autorisé(e) à reproduire cette voix pour la formation DEEG"
+        type: boolean
+        required: true
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deeg-profil-voix-video
+  cancel-in-progress: false
+
+jobs:
+  voix-video:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    env:
+      DEEG_REF_URL: ${{ secrets.DEEG_VIDEO_VOICE_REFERENCE_URL }}
+      DEEG_REFERENCE_PATH: .modeles/reference_video.wav
+      DEEG_TEXT: ${{ inputs.texte }}
+      DEEG_SPEED: ${{ inputs.vitesse }}
+      DEEG_REF_START: ${{ inputs.debut_reference }}
+      DEEG_AUTORISE: ${{ inputs.autorisation }}
+      HF_HUB_DISABLE_TELEMETRY: "1"
+      OMP_NUM_THREADS: "4"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Verifier la configuration et l'autorisation
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "$DEEG_AUTORISE" != "true" ]; then
+            echo "::error::Autorisation explicite requise pour utiliser cette voix."
+            exit 1
+          fi
+          if [ -z "$DEEG_REF_URL" ] || [[ "$DEEG_REF_URL" != https://* ]]; then
+            echo "::error::Configurer le secret DEEG_VIDEO_VOICE_REFERENCE_URL avec un lien HTTPS prive vers les 20 secondes originales."
+            exit 1
+          fi
+          if [[ ! "$DEEG_REF_START" =~ ^[0-9]+([.][0-9]+)?$ ]]; then
+            echo "::error::Le debut de reference doit etre un nombre positif."
+            exit 1
+          fi
+          if [ "${#DEEG_TEXT}" -gt 500 ] || [ -z "$DEEG_TEXT" ]; then
+            echo "::error::Texte d'essai requis : 1 a 500 caracteres."
+            exit 1
+          fi
+
+      - name: Installer FFmpeg et valider le preparateur
+        shell: bash
+        run: |
+          set -euo pipefail
+          if ! command -v ffmpeg >/dev/null || ! command -v ffprobe >/dev/null; then
+            sudo apt-get update -qq
+            sudo apt-get install -y ffmpeg
+          fi
+          python -m pip install pytest
+          python -m pytest -q tests/test_preparer_reference_video.py tests/test_clonage.py
+
+      - name: Telecharger et preparer la reference uniquement sur le runner
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          mkdir -p .modeles
+          curl --proto '=https' --proto-redir '=https' --fail --silent --show-error \
+            --location --retry 2 --max-time 120 --max-filesize 20000000 \
+            --output .modeles/source_privee "$DEEG_REF_URL"
+          python scripts/preparer_reference_video.py \
+            --source .modeles/source_privee \
+            --sortie "$DEEG_REFERENCE_PATH" \
+            --debut "$DEEG_REF_START" --longueur 10
+          rm -f .modeles/source_privee
+
+      - name: Installer Chatterbox Multilingual V3
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --upgrade pip
+          python -m pip install --index-url https://download.pytorch.org/whl/cpu \
+            torch==2.6.0+cpu torchaudio==2.6.0+cpu
+          python -m pip install -r requirements-clonage.txt
+
+      - name: Generer un essai de la nouvelle voix
+        run: python scripts/cloner_voix.py
+
+      - name: Publier uniquement la synthese (jamais la voix source)
+        uses: actions/upload-artifact@v4
+        with:
+          name: essai-nouvelle-voix-deeg-${{ github.run_number }}
+          path: sorties-clonage/
+          if-no-files-found: error
+          retention-days: 3
+
+      - name: Effacer les references locales du runner
+        if: always()
+        shell: bash
+        run: |
+          rm -f .modeles/source_privee .modeles/reference_video.wav

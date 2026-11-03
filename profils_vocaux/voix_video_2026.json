@@ -1,0 +1,16 @@
+{
+  "identifiant": "deeg_voix_video_2026_11",
+  "nom": "Voix vidéo DEEG — novembre 2026",
+  "etat": "préparé — essai vocal à réaliser et valider à l'écoute",
+  "langue": "fr",
+  "moteur": "Chatterbox Multilingual V3",
+  "technique": "conditionnement sur référence audio, sans entraînement de poids",
+  "source": "vidéo fournie par le responsable du projet, 20 secondes originales",
+  "reference_secondes": 10,
+  "vitesse_pct": 85,
+  "secret_github": "DEEG_VIDEO_VOICE_REFERENCE_URL",
+  "workflow": ".github/workflows/profil-voix-video.yml",
+  "reference_audio_stockee_dans_le_depot": false,
+  "verification_autorisation": "requise à chaque exécution",
+  "verification_timbre_et_prononciation": "à effectuer après génération"
+}
