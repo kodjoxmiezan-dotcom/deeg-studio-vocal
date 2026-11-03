@@ -77,3 +77,6 @@ Les sorties audio sont `A_fidelite.mp3/.wav` et `B_institutionnel.mp3/.wav`, acc
 
 Les variantes sont des hypothèses de réglages ; **leur ressemblance exacte n'est pas démontrée**. La sélection du profil définitif dépend de l'écoute par le responsable DEEG. La référence audio n'est jamais publiée dans le dépôt ni dans les artefacts.
 
+## Nouvelle voix issue d'une vidéo (novembre 2026)
+
+Un profil distinct est prêt pour un essai de synthèse vocale conditionnée sur un extrait privé de 10 secondes, sans modifier les voix des modules existants. Consultez [le guide d'intégration](GUIDE_REFERENCE_VIDEO.md) avant de configurer le secret `DEEG_VIDEO_VOICE_REFERENCE_URL` et de lancer le workflow **DEEG - Profil vocal depuis video (prive)**. Cette procédure ne constitue pas un réentraînement de modèle.
