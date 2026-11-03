@@ -1,0 +1,2 @@
+# Interface utilisateur locale (l'installation du moteur reste distincte).
+gradio>=6.0,<7.0
