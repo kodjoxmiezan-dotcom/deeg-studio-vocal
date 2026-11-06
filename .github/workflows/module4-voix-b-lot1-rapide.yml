@@ -2,7 +2,7 @@ name: DEEG Module 4 - lot 1 voix B (reprise sans apt)
 on:
   push:
     paths:
-      - '.github/workflows/module4-voix-b.yml'
+      - '.github/workflows/module4-voix-b-lot1-rapide.yml'
   workflow_dispatch:
 permissions:
   contents: read
