@@ -25,7 +25,7 @@ def test_genere_refus_sans_droits():
 
 def test_generer_simulation(tmp_path, monkeypatch):
     source = tmp_path / "voix_20s.wav"
-    source.write_bytes(b"source privée")
+    source.write_bytes("source privée".encode("utf-8"))
     dossier = tmp_path / "sorties"
     dossier.mkdir()
     monkeypatch.setattr(mod, "OUTPUT", dossier)
@@ -81,14 +81,14 @@ def test_previsualisation_reference(tmp_path, monkeypatch):
     def fausse_preparation(chemin, sortie, debut, duree):
         assert chemin == source
         assert duree == 10.0
-        sortie.write_bytes(b"aperçu prive")
+        sortie.write_bytes("aperçu prive".encode("utf-8"))
         return {"duree_secondes": 10.0, "rms_normalise": 0.1,
                 "part_ecretee": 0.0}
     monkeypatch.setattr(mod, "preparer", fausse_preparation)
     message, extrait, diagnostic = mod.previsualiser_reference(str(source), 0.0)
     assert message.startswith("✅")
     assert extrait == str(dossier / "reference_previsualisation.wav")
-    assert (dossier / "reference_previsualisation.wav").read_bytes() == b"aperçu prive"
+    assert (dossier / "reference_previsualisation.wav").read_bytes() == "aperçu prive".encode("utf-8")
     assert diagnostic["extrait_secondes"] == 10.0
 
 
@@ -96,7 +96,7 @@ def test_previsualisation_ne_retourne_pas_un_ancien_fichier(tmp_path, monkeypatc
     dossier = tmp_path / "sorties"
     dossier.mkdir()
     old = dossier / "reference_previsualisation.wav"
-    old.write_bytes(b"ancien aperçu")
+    old.write_bytes("ancien aperçu".encode("utf-8"))
     monkeypatch.setattr(mod, "OUTPUT", dossier)
     message, extrait, diagnostic = mod.previsualiser_reference(None, 0)
     assert message.startswith("❌")
