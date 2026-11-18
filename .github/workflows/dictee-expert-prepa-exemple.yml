@@ -3,6 +3,7 @@ on:
   push:
     paths:
       - .github/workflows/dictee-expert-prepa-exemple.yml
+      - scripts/generer_dictee_cm2_exemple.py
   workflow_dispatch:
 permissions:
   contents: read
