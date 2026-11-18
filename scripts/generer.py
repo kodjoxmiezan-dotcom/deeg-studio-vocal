@@ -15,6 +15,49 @@ OUTPUT = ROOT / "sorties"
 TEXT_FILE = ROOT / "narrations" / "texte.txt"
 MODELS = ROOT / ".modeles"
 
+CATALOGUE_VOIX = ROOT / "profils_vocaux" / "catalogue.json"
+
+
+def charger_catalogue() -> dict:
+    """Catalogue de présélections, sans poids IA ni référence vocale privée."""
+    donnees = json.loads(CATALOGUE_VOIX.read_text(encoding="utf-8"))
+    if donnees.get("version") != 1 or not isinstance(donnees.get("voix"), list):
+        raise ValueError("Catalogue de voix invalide.")
+    return donnees
+
+
+def choisir_voix(moteur: str, presel: str, libre: str) -> str:
+    """Choisit un profil sans changer les anciens réglages des workflows."""
+    valeurs_defaut = {
+        "edge": "fr-FR-HenriNeural",
+        "piper": "fr_FR-tom-medium",
+        "voix_video": "deeg_voix_video_2026_11",
+    }
+    if moteur not in valeurs_defaut:
+        raise ValueError(f"Moteur inconnu : {moteur}")
+
+    presel = (presel or "automatique").strip()
+    if presel != "automatique":
+        voix = {
+            v["identifiant"]: v for v in charger_catalogue()["voix"]
+        }.get(presel)
+        if voix is None:
+            raise ValueError(f"Présélection vocale inconnue : {presel}")
+        if voix["moteur"] != moteur:
+            raise ValueError(
+                f"Présélection incompatible : {presel} ne fonctionne pas avec {moteur}."
+            )
+        return presel
+
+    if moteur == "voix_video":
+        return valeurs_defaut[moteur]
+    if moteur == "piper":
+        # Compatibilité : l'ancien workflow donnait Henri comme valeur
+        # de champ, même lorsque le moteur Piper était sélectionné.
+        return libre if libre.startswith("fr_FR-") else valeurs_defaut[moteur]
+    return libre or valeurs_defaut[moteur]
+
+
 
 def check_speed(value: str) -> int:
     try:
@@ -134,7 +177,8 @@ def voix_video(text: str, speed: int, mp3: Path, wav: Path, srt: Path) -> str:
 def main() -> None:
     OUTPUT.mkdir(parents=True, exist_ok=True)
     engine = os.getenv("DEEG_ENGINE", "edge").strip().lower()
-    voice = os.getenv("DEEG_VOICE", "fr-FR-HenriNeural").strip()
+    choix_catalogue = os.getenv("DEEG_VOICE_CATALOGUE", "automatique").strip()
+    voice = choisir_voix(engine, choix_catalogue, os.getenv("DEEG_VOICE", "fr-FR-HenriNeural").strip())
     speed = check_speed(os.getenv("DEEG_SPEED", "85"))
     text = get_text()
     mp3 = OUTPUT / "deeg_narration.mp3"
@@ -155,6 +199,7 @@ def main() -> None:
         json.dumps({
             "moteur": engine,
             "voix": actual_voice,
+            "selection_catalogue": choix_catalogue,
             "vitesse_pct": speed,
             "duree_secondes": round(duration_seconds(wav), 2),
             "sous_titres": "horodatages_du_moteur" if engine == "edge" else "estimes_a_verifier",
