@@ -20,6 +20,10 @@ jobs:
       - name: Installer Edge TTS
         run: |
           python -m pip install -r requirements-edge.txt
+          if ! command -v ffmpeg >/dev/null 2>&1; then
+            sudo apt-get update -qq
+            sudo apt-get install -y ffmpeg
+          fi
           ffmpeg -version
       - name: Générer l'exemple de dictée CM2
         run: python scripts/generer_dictee_cm2_exemple.py
