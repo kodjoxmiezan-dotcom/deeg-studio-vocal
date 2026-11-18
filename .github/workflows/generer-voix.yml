@@ -17,6 +17,22 @@ on:
         required: false
         type: string
         default: ""
+      voix_catalogue:
+        description: "Selection rapide du catalogue (automatique = utiliser le champ voix)"
+        required: true
+        type: choice
+        options:
+          - automatique
+          - fr-FR-HenriNeural
+          - fr-FR-DeniseNeural
+          - fr-FR-EloiseNeural
+          - fr-FR-RemyMultilingualNeural
+          - fr-FR-VivienneMultilingualNeural
+          - fr_FR-tom-medium
+          - fr_FR-siwis-medium
+          - fr_FR-upmc-medium
+          - fr_FR-gilles-low
+        default: automatique
       voix:
         description: "Edge : fr-FR-HenriNeural / Piper : fr_FR-tom-medium"
         required: false
@@ -38,6 +54,7 @@ on:
         type: string
         default: "85"
   push:
+    branches: [main]
     paths:
       - narrations/texte.txt
       - scripts/generer.py
@@ -56,6 +73,7 @@ jobs:
       DEEG_ENGINE: ${{ inputs.moteur || 'edge' }}
       DEEG_TEXT: ${{ inputs.texte || '' }}
       DEEG_VOICE: ${{ inputs.voix || 'fr-FR-HenriNeural' }}
+      DEEG_VOICE_CATALOGUE: ${{ inputs.voix_catalogue || 'automatique' }}
       DEEG_SPEED: ${{ inputs.vitesse || '85' }}
       DEEG_REF_START: ${{ inputs.debut_reference || '0' }}
       DEEG_AUTORISATION: ${{ inputs.autorisation || 'false' }}

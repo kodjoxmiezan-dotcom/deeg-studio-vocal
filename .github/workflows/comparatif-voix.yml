@@ -1,0 +1,68 @@
+name: DEEG - Comparatif de 5 voix francaises
+
+on:
+  workflow_dispatch:
+    inputs:
+      texte:
+        description: "Court texte commun aux 5 voix (sans donnees personnelles)"
+        required: true
+        type: string
+        default: "Bienvenue dans le studio vocal DEEG. Ensemble, construisons une ecole plus equitable et inclusive."
+      vitesse:
+        description: "Vitesse commune (%)"
+        required: true
+        type: choice
+        options:
+          - "80"
+          - "85"
+          - "90"
+          - "100"
+        default: "85"
+
+permissions:
+  contents: read
+
+jobs:
+  comparer:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        voix:
+          - fr-FR-HenriNeural
+          - fr-FR-DeniseNeural
+          - fr-FR-EloiseNeural
+          - fr-FR-RemyMultilingualNeural
+          - fr-FR-VivienneMultilingualNeural
+    env:
+      DEEG_ENGINE: edge
+      DEEG_VOICE_CATALOGUE: ${{ matrix.voix }}
+      DEEG_VOICE: fr-FR-HenriNeural
+      DEEG_TEXT: ${{ inputs.texte }}
+      DEEG_SPEED: ${{ inputs.vitesse }}
+    steps:
+      - name: Recuperer le depot
+        uses: actions/checkout@v4
+      - name: Installer Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Installer le moteur et les tests
+        run: |
+          python -m pip install -r requirements-edge.txt pytest
+          if ! command -v ffmpeg >/dev/null; then
+            sudo apt-get update -qq
+            sudo apt-get install -y ffmpeg
+          fi
+      - name: Verifier les profils
+        run: python -m pytest -q tests/test_utils.py tests/test_catalogue_voix.py
+      - name: Generer un essai pour cette voix
+        run: python scripts/generer.py
+      - name: Exporter MP3 WAV SRT et rapport
+        uses: actions/upload-artifact@v4
+        with:
+          name: comparatif-${{ matrix.voix }}-${{ github.run_number }}
+          path: sorties/
+          if-no-files-found: error
+          retention-days: 7

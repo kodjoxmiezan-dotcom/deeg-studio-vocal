@@ -1,0 +1,35 @@
+name: Audit catalogue vocal DEEG
+
+on:
+  push:
+    paths:
+      - profils_vocaux/catalogue.json
+      - scripts/generer.py
+      - tests/test_catalogue_voix.py
+      - .github/workflows/generer-voix.yml
+      - .github/workflows/comparatif-voix.yml
+      - .github/workflows/audit-catalogue.yml
+  pull_request:
+    paths:
+      - profils_vocaux/catalogue.json
+      - scripts/generer.py
+      - tests/test_catalogue_voix.py
+      - .github/workflows/generer-voix.yml
+      - .github/workflows/comparatif-voix.yml
+      - .github/workflows/audit-catalogue.yml
+
+permissions:
+  contents: read
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: python -m pip install pytest
+      - run: python -m pytest -q tests/test_utils.py tests/test_catalogue_voix.py
+      - run: python -m py_compile scripts/generer.py

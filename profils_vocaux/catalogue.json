@@ -1,0 +1,86 @@
+{
+  "version": 1,
+  "description": "Catalogue de présélections françaises pour la production DEEG et EXPERT PRÉPA. Les voix distantes nécessitent un essai réel et une vérification des licences.",
+  "voix": [
+    {
+      "identifiant": "fr-FR-HenriNeural",
+      "nom": "Henri",
+      "moteur": "edge",
+      "langue": "fr-FR",
+      "profil": "masculin",
+      "etat": "déjà configurée"
+    },
+    {
+      "identifiant": "fr-FR-DeniseNeural",
+      "nom": "Denise",
+      "moteur": "edge",
+      "langue": "fr-FR",
+      "profil": "féminin",
+      "etat": "à essayer"
+    },
+    {
+      "identifiant": "fr-FR-EloiseNeural",
+      "nom": "Éloïse",
+      "moteur": "edge",
+      "langue": "fr-FR",
+      "profil": "féminin",
+      "etat": "à essayer"
+    },
+    {
+      "identifiant": "fr-FR-RemyMultilingualNeural",
+      "nom": "Rémy",
+      "moteur": "edge",
+      "langue": "fr-FR",
+      "profil": "masculin multilingue",
+      "etat": "à essayer"
+    },
+    {
+      "identifiant": "fr-FR-VivienneMultilingualNeural",
+      "nom": "Vivienne",
+      "moteur": "edge",
+      "langue": "fr-FR",
+      "profil": "féminin multilingue",
+      "etat": "à essayer"
+    },
+    {
+      "identifiant": "fr_FR-tom-medium",
+      "nom": "Tom",
+      "moteur": "piper",
+      "langue": "fr-FR",
+      "profil": "modèle français moyen",
+      "etat": "déjà configurée"
+    },
+    {
+      "identifiant": "fr_FR-siwis-medium",
+      "nom": "Siwis",
+      "moteur": "piper",
+      "langue": "fr-FR",
+      "profil": "modèle français moyen",
+      "etat": "à essayer"
+    },
+    {
+      "identifiant": "fr_FR-upmc-medium",
+      "nom": "UPMC",
+      "moteur": "piper",
+      "langue": "fr-FR",
+      "profil": "modèle français multilocuteur",
+      "etat": "à essayer"
+    },
+    {
+      "identifiant": "fr_FR-gilles-low",
+      "nom": "Gilles",
+      "moteur": "piper",
+      "langue": "fr-FR",
+      "profil": "modèle français léger",
+      "etat": "à essayer"
+    },
+    {
+      "identifiant": "deeg_voix_video_2026_11",
+      "nom": "Voix vidéo DEEG",
+      "moteur": "voix_video",
+      "langue": "fr",
+      "profil": "référence privée Chatterbox V3",
+      "etat": "expérimentale, à valider à l'écoute"
+    }
+  ]
+}
