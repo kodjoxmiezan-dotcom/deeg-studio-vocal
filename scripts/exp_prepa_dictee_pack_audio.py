@@ -40,6 +40,8 @@ def main():
         group=json.loads(manifest.read_text(encoding="utf8"))
         for item in group:
             code=item["id"];voice=item["voix"];url=item["url"]
+            if voice not in {"H", "F"}:
+                raise ValueError(f"Code de voix inconnu pour {code}: {voice}")
             name=f"{code}_{voice}_DICTEE_2MIN.mp3"
             if (OUTPUT/name).exists():continue
             try:
@@ -64,7 +66,12 @@ def main():
                             "-ar","24000","-ac","1",intermediate)
                         audio=AudioSegment.from_wav(intermediate)
                     audio=pauses(audio,max(0,TARGET-len(audio)))
-                    audio=audio[:TARGET]
+                    if len(audio)>TARGET+100:
+                        raise ValueError(
+                            f"Audio de {len(audio)/1000:.2f}s dépasserait 2 minutes : "
+                            "refus de couper une fin de phrase.")
+                    if len(audio)>TARGET:
+                        audio=audio[:TARGET]  # correction technique de 100 ms maximum
                     if len(audio)<TARGET:
                         audio+=AudioSegment.silent(duration=TARGET-len(audio),frame_rate=audio.frame_rate)
                     audio.export(OUTPUT/name,format="mp3",bitrate="96k")
