@@ -2,7 +2,7 @@ name: EXPERT PREPA CM2 - Assemblage audio deux voix
 on:
   push:
     paths:
-      - experts_prepa_cm2_audio/lot_*.json
+      - experts_prepa_cm2_audio/production_ready.flag
       - scripts/exp_prepa_dictee_pack_audio.py
       - .github/workflows/exp-prepa-assemble-2-voix.yml
   workflow_dispatch:
