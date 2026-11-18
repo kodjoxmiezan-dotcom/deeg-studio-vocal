@@ -98,7 +98,15 @@ async def synth(voice, text, rate="-15%"):
                 if retry == MAX_RETRIES - 1:
                     raise
                 await asyncio.sleep(2 ** retry)
-    audio = AudioSegment.from_file(file, format="mp3")
+    # Convertir en WAV via FFmpeg : ne pas dépendre de FFprobe,
+    # absent sur certains exécuteurs GitHub Actions.
+    import subprocess
+    wav_file = CACHE / (key + ".wav")
+    if not wav_file.exists():
+        subprocess.run(["ffmpeg", "-hide_banner", "-loglevel", "error", "-y",
+                        "-i", str(file), "-ac", "1", "-ar", "24000", str(wav_file)],
+                       check=True)
+    audio = AudioSegment.from_wav(str(wav_file))
     if len(audio) < 160:
         raise RuntimeError("Durée vocale trop courte: " + text)
     return audio.set_frame_rate(24000).set_channels(1).set_sample_width(2)
