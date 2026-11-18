@@ -1,0 +1,3 @@
+# Moteur Kokoro isole du pipeline principal. Installer torch CPU avant.
+kokoro==0.9.4
+soundfile>=0.12,<1

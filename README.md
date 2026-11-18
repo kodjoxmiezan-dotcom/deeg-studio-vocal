@@ -54,6 +54,16 @@ Ce comparatif utilise le service Edge TTS via une bibliothèque non officielle :
 
 Le workflow **Audit catalogue vocal DEEG** exécute les tests Python sur toute modification proposée au catalogue ou aux scripts associés. Les tests ne prétendent pas démontrer une bonne qualité vocale : ils vérifient la sélection, les identifiants et la rétrocompatibilité.
 
+## Essai séparé de Kokoro 82M — moteur expérimental
+
+Kokoro constitue un **quatrième moteur** à essayer, distinct des moteurs Edge, Piper et Chatterbox. Sa voix française présélectionnée est `ff_siwis`. L'essai est disponible **en ligne par GitHub Actions** et n'exige aucune installation sur le Mac. Il ne remplace pas les voix DEEG actuellement utilisées et n'active aucune reproduction de voix personnelle.
+
+1. Ouvrir **Actions → EXPERIMENTAL - Kokoro 82M voix francaise → Run workflow**.
+2. Fournir un passage français court (800 caractères maximum) et choisir la vitesse, par défaut 85 %.
+3. Après réussite, ouvrir l'artefact `kokoro-ff-siwis-...` et écouter le MP3 ; le WAV, les sous-titres SRT *estimés* et le rapport JSON sont également fournis.
+
+La première exécution télécharge les poids du modèle sur un exécuteur GitHub, ce qui peut être lent ou échouer. Cet essai n'est pas validé pour une utilisation de production tant que la synthèse, l'intonation, les coûts et les droits de diffusion n'ont pas été contrôlés. Kokoro-82M est publié sous licence Apache-2.0 : [fiche du modèle](https://huggingface.co/hexgrad/Kokoro-82M). Le pilote est isolé dans `scripts/essai_kokoro_fr.py` et `requirements-kokoro.txt`.
+
 ## Modifier les textes depuis ChatGPT
 
 Demandez dans ChatGPT : « Dans mon dépôt GitHub `kodjoxmiezan-dotcom/deeg-studio-vocal`, remplace `narrations/texte.txt` par [votre texte] ». Le commit peut déclencher GitHub Actions. Les fichiers générés apparaissent dans les *Artifacts* de l'exécution.
