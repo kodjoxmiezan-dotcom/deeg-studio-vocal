@@ -23,6 +23,37 @@ Une modification de `narrations/texte.txt` dans GitHub déclenche aussi la gén�
 
 La vitesse initiale est de **85 %**, proche de notre rythme pédagogique choisi pour DEEG. Elle se règle entre 60 et 130 %.
 
+## Nouveau catalogue des voix françaises (novembre 2026)
+
+Le fichier [`profils_vocaux/catalogue.json`](profils_vocaux/catalogue.json) décrit **10 profils** : cinq voix Edge TTS, quatre voix Piper et le profil vidéo DEEG expérimental. Un profil n'est **pas** un modèle IA téléchargé ou une voix déjà approuvée. Les nouvelles voix doivent être testées à l'écoute.
+
+### Lancer une narration depuis un navigateur — sans rien installer sur Mac
+
+1. Ouvrir **Actions → Studio vocal DEEG → Run workflow**.
+2. Choisir `moteur = edge` ou `piper`, puis la **voix_catalogue** correspondante.
+3. Coller le texte dans `texte`, régler la vitesse (85 % conseillé), puis lancer.
+4. Télécharger les fichiers MP3, WAV et SRT sous les **Artifacts** de l'exécution.
+
+Si `voix_catalogue = automatique`, l'ancien champ libre `voix` reste utilisé. Pour Piper, un nom de voix Edge dans le champ libre revient à l'ancienne voix Piper Tom. Une présélection incompatible avec le moteur est rejetée explicitement.
+
+| Moteur | Voix présélectionnées | État |
+| --- | --- | --- |
+| Edge TTS | Henri, Denise, Éloïse, Rémy multilingue, Vivienne multilingue | Nouvelles voix à écouter |
+| Piper TTS | Tom, Siwis, UPMC, Gilles | Télécharger les modèles à l'exécution ; licences distinctes |
+| Chatterbox V3 | Voix vidéo DEEG | Référence privée et autorisation requises ; expérimental |
+
+### Comparer les cinq voix Edge avec le même texte
+
+Ouvrir **Actions → DEEG - Comparatif de 5 voix francaises → Run workflow**. Entrer un court passage sans informations personnelles. Ce workflow produit cinq artefacts séparés, chacun avec MP3, WAV, SRT et rapport. Écouter chaque MP3 avant de retenir une voix pour DEEG ou EXPERT PRÉPA CM2.
+
+Ce comparatif utilise le service Edge TTS via une bibliothèque non officielle : il peut échouer si le service modifie son accès ou ses conditions. Aucune génération n'est garantie avant une exécution réussie. Les fichiers sont conservés sept jours.
+
+**Sécurité et droits :** ne pas publier de référence vocale privée ou de données d'élèves. Vérifier les droits et licences de chaque modèle avant une utilisation publique. La variante B des narrations DEEG existantes n'est pas modifiée.
+
+### Contrôle automatique du catalogue
+
+Le workflow **Audit catalogue vocal DEEG** exécute les tests Python sur toute modification proposée au catalogue ou aux scripts associés. Les tests ne prétendent pas démontrer une bonne qualité vocale : ils vérifient la sélection, les identifiants et la rétrocompatibilité.
+
 ## Modifier les textes depuis ChatGPT
 
 Demandez dans ChatGPT : « Dans mon dépôt GitHub `kodjoxmiezan-dotcom/deeg-studio-vocal`, remplace `narrations/texte.txt` par [votre texte] ». Le commit peut déclencher GitHub Actions. Les fichiers générés apparaissent dans les *Artifacts* de l'exécution.
