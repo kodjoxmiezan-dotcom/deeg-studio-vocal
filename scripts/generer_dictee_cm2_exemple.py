@@ -32,11 +32,11 @@ def silence(name,seconds):
     file=OUT/name
     with wave.open(str(file),'wb') as w:
         w.setnchannels(1);w.setsampwidth(2);w.setframerate(24000)
-        w.writeframes(b'\\x00\\x00'*int(24000*seconds))
+        w.writeframes(bytes(2)*int(24000*seconds))
     return file
 def assemble(files,target):
     playlist=OUT/'playlist.txt'
-    playlist.write_text(''.join("file '"+str(p.absolute())+"'\\n" for p in files),encoding='utf-8')
+    playlist.write_text(''.join("file '"+str(p.absolute())+"'\n" for p in files),encoding='utf-8')
     raw=OUT/'assembled.wav'
     run('ffmpeg','-y','-v','error','-f','concat','-safe','0','-i',str(playlist),
         '-ac','1','-ar','24000','-c:a','pcm_s16le',str(raw))
@@ -65,7 +65,7 @@ def main():
             seq.append(p);seq.append(p4 if i<2 else p10)
     seq.extend([fin,p4,relecture])
     assemble(seq,OUT/'EXPERT_PREPA_CM2_S01_A_MODELE_COMPLET.mp3')
-    (OUT/'TEXTE_REFERENCE_ENSEIGNANT.txt').write_text(TITLE+'\\n\\n'+ORIGINAL+'\\n',encoding='utf-8')
+    (OUT/'TEXTE_REFERENCE_ENSEIGNANT.txt').write_text(TITLE+'\n\n'+ORIGINAL+'\n',encoding='utf-8')
     (OUT/'parametres.json').write_text(json.dumps({
         'moteur':'Studio vocal DEEG / Edge TTS','voix':VOICE,
         'lecture_complete_pct':60,'phrases_pct':69,'repetitions':3,
