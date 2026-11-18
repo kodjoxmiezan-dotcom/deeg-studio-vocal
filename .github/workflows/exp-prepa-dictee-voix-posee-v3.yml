@@ -1,0 +1,51 @@
+name: EXPERT PREPA - Dictée voix personnalisée posée V3
+
+on:
+  push:
+    paths:
+      - .github/workflows/exp-prepa-dictee-voix-posee-v3.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  ralentir:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Installer FFmpeg
+        shell: bash
+        run: |
+          set -euo pipefail
+          if ! command -v ffmpeg >/dev/null; then
+            sudo apt-get update -qq
+            sudo apt-get install -y ffmpeg
+          fi
+      - name: Récupérer l'essai vocal personnalisé
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --location --retry 3 --max-time 120 \
+            --output source_personnalisee.wav \
+            'https://resource2.heygen.ai/text_to_speech/954c7dedda3845e79706488c44081562/703db99c595849c581537e265bbf63c6/id=85781a832b6e4c52a92e9916513ce926.wav'
+          ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1 source_personnalisee.wav
+      - name: Ralentir sans modifier le timbre
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p sortie
+          ffmpeg -hide_banner -loglevel error -y \
+            -i source_personnalisee.wav \
+            -af 'atempo=0.72' \
+            -ar 44100 -ac 1 -codec:a libmp3lame -b:a 128k \
+            sortie/EXPERT_PREPA_DICTEE_CM2_VOIX_PERSONNALISEE_POSEE_V3.mp3
+          ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1 \
+            sortie/EXPERT_PREPA_DICTEE_CM2_VOIX_PERSONNALISEE_POSEE_V3.mp3
+      - name: Publier le MP3 de validation
+        uses: actions/upload-artifact@v4
+        with:
+          name: EXPERT_PREPA_DICTEE_CM2_VOIX_POSEE_V3
+          path: sortie/*.mp3
+          retention-days: 7
+          if-no-files-found: error
