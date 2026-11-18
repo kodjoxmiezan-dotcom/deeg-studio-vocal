@@ -3,6 +3,7 @@ on:
   push:
     paths:
       - .github/workflows/exp-prepa-rattrapage-1-6.yml
+      - scripts/exp_prepa_reprise_89_studio_edge.py
   workflow_dispatch:
 permissions:
   contents: read
