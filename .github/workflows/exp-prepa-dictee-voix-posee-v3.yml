@@ -1,9 +1,6 @@
 name: EXPERT PREPA - Dictée voix personnalisée posée V3
 
 on:
-  push:
-    paths:
-      - .github/workflows/exp-prepa-dictee-voix-posee-v3.yml
   workflow_dispatch:
 
 permissions:
@@ -23,12 +20,14 @@ jobs:
             sudo apt-get install -y ffmpeg
           fi
       - name: Récupérer l'essai vocal personnalisé
+        env:
+          SOURCE_AUDIO_URL: ${{ secrets.EXPERT_PREPA_VOICE_SAMPLE_URL }}
         shell: bash
         run: |
           set -euo pipefail
+          if [ -z "$SOURCE_AUDIO_URL" ]; then echo "Configurer le secret EXPERT_PREPA_VOICE_SAMPLE_URL." >&2; exit 1; fi
           curl --fail --location --retry 3 --max-time 120 \
-            --output source_personnalisee.wav \
-            'https://resource2.heygen.ai/text_to_speech/954c7dedda3845e79706488c44081562/703db99c595849c581537e265bbf63c6/id=85781a832b6e4c52a92e9916513ce926.wav'
+            --output source_personnalisee.wav "$SOURCE_AUDIO_URL"
           ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1 source_personnalisee.wav
       - name: Ralentir sans modifier le timbre
         shell: bash
