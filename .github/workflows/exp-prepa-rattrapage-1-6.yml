@@ -1,0 +1,44 @@
+name: EXPERT PREPA CM2 - Rattrapage lots Studio DEEG 1 et 6
+on:
+  push:
+    paths:
+      - .github/workflows/exp-prepa-rattrapage-1-6.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  rattrapage:
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        shard: [1,6]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Installer les outils sans apt-get
+        shell: bash
+        run: |
+          set -euo pipefail
+          timeout 240 python -m pip install --disable-pip-version-check --retries 3 --timeout 30 edge-tts pydub imageio-ffmpeg
+          if ! command -v ffmpeg >/dev/null; then
+            mkdir -p /tmp/deeg-bin
+            ln -s "$(python -c 'import imageio_ffmpeg;print(imageio_ffmpeg.get_ffmpeg_exe())')" /tmp/deeg-bin/ffmpeg
+            echo /tmp/deeg-bin >> "$GITHUB_PATH"
+          fi
+      - name: Reprendre les pistes du lot
+        run: python scripts/exp_prepa_reprise_89_studio_edge.py --shards 9 --shard ${{ matrix.shard }}
+      - name: Remettre le ZIP de contrôle
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: EXPERT_PREPA_RATTRAPAGE_STUDIO_LOT_${{ matrix.shard }}
+          path: |
+            sorties-cm2-studio-secours/*.mp3
+            sorties-cm2-studio-secours/*.json
+          if-no-files-found: warn
+          retention-days: 7
