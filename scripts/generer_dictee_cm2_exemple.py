@@ -51,16 +51,13 @@ def main():
     lecture=synth('lecture_integrale_tres_lente',passage,60)
     consigne=synth('consigne_phrase','Maintenant, écris chaque phrase. Elle sera lue trois fois. '
                    'Tu peux mettre le lecteur en pause quand tu veux.',78)
-    noms=['Première','Deuxième','Troisième','Quatrième']
-    labels=[synth(f'annonce_{i+1:02}',f'{noms[i]} phrase.',75) for i in range(4)]
     phrases=[synth(f'phrase_{i+1:02}',p,69) for i,p in enumerate(PHRASES)]
     fin=synth('consigne_relecture','Voici la relecture complète. Vérifie les accents, '
               'les accords, les majuscules et la ponctuation.',78)
     relecture=synth('relecture_finale',passage,68)
     p4=silence('pause_04s.wav',4);p10=silence('pause_10s.wav',10)
     seq=[intro,lecture,p4,consigne,p4]
-    for label,p in zip(labels,phrases):
-        seq.append(label)
+    for p in phrases:
         for i in range(3):
             seq.append(p);seq.append(p4 if i<2 else p10)
     seq.extend([fin,p4,relecture])
@@ -70,6 +67,7 @@ def main():
         'moteur':'Studio vocal DEEG / Edge TTS','voix':VOICE,
         'lecture_complete_pct':60,'phrases_pct':69,'repetitions':3,
         'pause_entre_repetitions_s':4,'pause_entre_phrases_s':10,
+        'annonces_numerotees':False,
         'ponctuation':'virgule et point annonces oralement'},ensure_ascii=False,indent=2))
     print('Fichier produit',OUT/'EXPERT_PREPA_CM2_S01_A_MODELE_COMPLET.mp3')
 if __name__=='__main__':main()
