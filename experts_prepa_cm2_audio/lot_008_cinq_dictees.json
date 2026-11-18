@@ -1,0 +1,62 @@
+[
+  {
+    "id": "S22_B",
+    "voix": "H",
+    "url": "https://resource2.heygen.ai/text_to_speech/954c7dedda3845e79706488c44081562/703db99c595849c581537e265bbf63c6/id=c5151500f8d64458a875622d043e7b3a.wav",
+    "duree_source": 68.63
+  },
+  {
+    "id": "S22_B",
+    "voix": "F",
+    "url": "https://resource2.heygen.ai/text_to_speech/954c7dedda3845e79706488c44081562/a561890607d647e98c8bc3b1a599a233/id=1059dd6fb42047f3b4cae4199158fd93.wav",
+    "duree_source": 68.99
+  },
+  {
+    "id": "S23_A",
+    "voix": "H",
+    "url": "https://resource2.heygen.ai/text_to_speech/954c7dedda3845e79706488c44081562/703db99c595849c581537e265bbf63c6/id=b2f9662f2f0f474d85d1ed18f558824b.wav",
+    "duree_source": 70.08
+  },
+  {
+    "id": "S23_A",
+    "voix": "F",
+    "url": "https://resource2.heygen.ai/text_to_speech/954c7dedda3845e79706488c44081562/a561890607d647e98c8bc3b1a599a233/id=9692a28eb7a1406fb598e45dba7b4260.wav",
+    "duree_source": 68.71
+  },
+  {
+    "id": "S23_B",
+    "voix": "H",
+    "url": "https://resource2.heygen.ai/text_to_speech/954c7dedda3845e79706488c44081562/703db99c595849c581537e265bbf63c6/id=ded29b70105e43ea8179a713123f511c.wav",
+    "duree_source": 75.83
+  },
+  {
+    "id": "S23_B",
+    "voix": "F",
+    "url": "https://resource2.heygen.ai/text_to_speech/954c7dedda3845e79706488c44081562/a561890607d647e98c8bc3b1a599a233/id=31dcad1e2d984030abf85fbf7a05e332.wav",
+    "duree_source": 72.54
+  },
+  {
+    "id": "S24_A",
+    "voix": "H",
+    "url": "https://resource2.heygen.ai/text_to_speech/954c7dedda3845e79706488c44081562/703db99c595849c581537e265bbf63c6/id=daffb992e3e341dcae0ea7d7b87ab734.wav",
+    "duree_source": 75.22
+  },
+  {
+    "id": "S24_A",
+    "voix": "F",
+    "url": "https://resource2.heygen.ai/text_to_speech/954c7dedda3845e79706488c44081562/a561890607d647e98c8bc3b1a599a233/id=4159f6234e114ff7922861916a335174.wav",
+    "duree_source": 74.81
+  },
+  {
+    "id": "S24_B",
+    "voix": "H",
+    "url": "https://resource2.heygen.ai/text_to_speech/954c7dedda3845e79706488c44081562/703db99c595849c581537e265bbf63c6/id=88923e6fd45045cca0a9dd4d2e2c758d.wav",
+    "duree_source": 77.16
+  },
+  {
+    "id": "S24_B",
+    "voix": "F",
+    "url": "https://resource2.heygen.ai/text_to_speech/954c7dedda3845e79706488c44081562/a561890607d647e98c8bc3b1a599a233/id=a356910e308144ceb5873b38b3003250.wav",
+    "duree_source": 76.67
+  }
+]
