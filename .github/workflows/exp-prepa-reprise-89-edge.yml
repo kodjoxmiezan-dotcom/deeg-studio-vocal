@@ -1,4 +1,4 @@
-name: EXPERT PREPA CM2 - Test Studio Vocal DEEG sans HeyGen
+name: EXPERT PREPA CM2 - Reprise des 89 pistes par Studio Vocal DEEG
 on:
   push:
     paths:
@@ -7,28 +7,33 @@ on:
 permissions:
   contents: read
 jobs:
-  controle:
+  generer:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 95
+    strategy:
+      fail-fast: false
+      max-parallel: 5
+      matrix:
+        shard: [0,1,2,3,4,5,6,7,8]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - name: Installer moteur vocal et FFmpeg
+      - name: Installer les outils vocaux du Studio DEEG
         run: |
           python -m pip install -r requirements-edge.txt pydub
           if ! command -v ffmpeg >/dev/null; then
             sudo apt-get update -qq
             sudo apt-get install -y ffmpeg
           fi
-      - name: Vérifier une dictée pilote (voix masculine)
-        run: python scripts/exp_prepa_reprise_89_studio_edge.py --shards 6 --shard 0 --limit 1
-      - name: Publier le fichier de contrôle
+      - name: Générer une partie des 89 pistes encore absentes
+        run: python scripts/exp_prepa_reprise_89_studio_edge.py --shards 9 --shard ${{ matrix.shard }}
+      - name: Livrer les pistes du lot avec leur contrôle technique
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: EXPERT_PREPA_TEST_STUDIO_DEEG
+          name: EXPERT_PREPA_REPRISE_DEEG_LOT_${{ matrix.shard }}
           path: |
             sorties-cm2-studio-secours/*.mp3
             sorties-cm2-studio-secours/*.json
