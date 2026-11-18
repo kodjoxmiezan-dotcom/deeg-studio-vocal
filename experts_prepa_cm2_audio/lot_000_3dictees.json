@@ -1,0 +1,32 @@
+[
+  {
+    "id": "S01_B",
+    "voix": "H",
+    "url": "https://resource2.heygen.ai/text_to_speech/954c7dedda3845e79706488c44081562/703db99c595849c581537e265bbf63c6/id=cf41ae403abf4d66847098420f6e25ee.wav"
+  },
+  {
+    "id": "S01_B",
+    "voix": "F",
+    "url": "https://resource2.heygen.ai/text_to_speech/954c7dedda3845e79706488c44081562/a561890607d647e98c8bc3b1a599a233/id=13f751d1a2694e609949f5730b11bf0c.wav"
+  },
+  {
+    "id": "S02_A",
+    "voix": "H",
+    "url": "https://resource2.heygen.ai/text_to_speech/954c7dedda3845e79706488c44081562/703db99c595849c581537e265bbf63c6/id=7eab76713e6f4d4bb046b7868cf789c6.wav"
+  },
+  {
+    "id": "S02_A",
+    "voix": "F",
+    "url": "https://resource2.heygen.ai/text_to_speech/954c7dedda3845e79706488c44081562/a561890607d647e98c8bc3b1a599a233/id=57984eee413045bda10674197dd301c3.wav"
+  },
+  {
+    "id": "S02_B",
+    "voix": "H",
+    "url": "https://resource2.heygen.ai/text_to_speech/954c7dedda3845e79706488c44081562/703db99c595849c581537e265bbf63c6/id=71ccdbeb56db45988ce761fa4578badf.wav"
+  },
+  {
+    "id": "S02_B",
+    "voix": "F",
+    "url": "https://resource2.heygen.ai/text_to_speech/954c7dedda3845e79706488c44081562/a561890607d647e98c8bc3b1a599a233/id=227cb744ecc7462bb3d59fa5fef7addb.wav"
+  }
+]
