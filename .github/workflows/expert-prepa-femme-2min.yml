@@ -1,0 +1,57 @@
+name: EXPERT PREPA - Essai voix féminine africaine 2 minutes
+
+on:
+  push:
+    paths:
+      - .github/workflows/expert-prepa-femme-2min.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  synthese:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Installer FFmpeg
+        shell: bash
+        run: |
+          set -euo pipefail
+          if ! command -v ffmpeg >/dev/null 2>&1; then
+            sudo apt-get update -qq
+            sudo apt-get install -y ffmpeg
+          fi
+      - name: Télécharger la voix féminine de démonstration
+        shell: bash
+        env:
+          SAMPLE_URL: https://resource2.heygen.ai/text_to_speech/954c7dedda3845e79706488c44081562/a561890607d647e98c8bc3b1a599a233/id=59b63b6470eb45b882dd3bdcb2a63ec4.wav
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --location --retry 2 --max-time 100 \
+            --output exemple_sabine.wav "$SAMPLE_URL"
+          ffprobe -v error -show_entries format=duration \
+            -of default=noprint_wrappers=1:nokey=1 exemple_sabine.wav
+      - name: Préparer exactement 2 minutes sans modifier la hauteur
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p exports
+          ORIG=$(ffprobe -v error -show_entries format=duration \
+            -of default=noprint_wrappers=1:nokey=1 exemple_sabine.wav)
+          ATEMPO=$(python3 -c "print(round(float('$ORIG')/120.0, 8))")
+          echo "Ralentissement=$ATEMPO"
+          ffmpeg -hide_banner -loglevel error -y \
+            -i exemple_sabine.wav -af "atempo=$ATEMPO,apad,atrim=duration=120" \
+            -ar 44100 -ac 1 -codec:a libmp3lame -b:a 128k \
+            exports/02_VOIX_FEMININE_SUD_AFRICAINE_2MIN.mp3
+          ffprobe -v error -show_entries format=duration \
+            -of default=noprint_wrappers=1:nokey=1 \
+            exports/02_VOIX_FEMININE_SUD_AFRICAINE_2MIN.mp3
+      - name: Exporter les MP3
+        uses: actions/upload-artifact@v4
+        with:
+          name: EXPERT_PREPA_VOIX_FEMININE_2MIN
+          path: exports/*.mp3
+          retention-days: 7
+          if-no-files-found: error
