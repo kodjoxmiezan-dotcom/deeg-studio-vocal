@@ -1,0 +1,35 @@
+name: EXPERT PREPA - Dictée pilote CM2
+on:
+  push:
+    paths:
+      - .github/workflows/dictee-expert-prepa-exemple.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  dictee:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - name: Récupérer le Studio vocal DEEG
+        uses: actions/checkout@v4
+      - name: Installer Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Installer Edge TTS
+        run: |
+          python -m pip install -r requirements-edge.txt
+          ffmpeg -version
+      - name: Générer l'exemple de dictée CM2
+        run: python scripts/generer_dictee_cm2_exemple.py
+      - name: Publier les enregistrements
+        uses: actions/upload-artifact@v4
+        with:
+          name: EXPERT_PREPA_CM2_S01_A_AUDIO
+          path: |
+            sorties-dictee-cm2/*.mp3
+            sorties-dictee-cm2/TEXTE_REFERENCE_ENSEIGNANT.txt
+            sorties-dictee-cm2/parametres.json
+          retention-days: 7
+          if-no-files-found: error
