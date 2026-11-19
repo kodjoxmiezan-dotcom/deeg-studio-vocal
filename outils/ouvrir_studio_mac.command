@@ -1,5 +1,5 @@
 #!/bin/bash
-# DEEG Studio Vocal : interface française locale, sans publication du son source.
+# Studio Vocal Éboulé : interface française locale, sans publication du son source.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
@@ -31,7 +31,7 @@ if [[ ! -f .venv/.deeg_clone_pret ]]; then
   touch .venv/.deeg_clone_pret
 fi
 
-printf "\nStudio vocal local : http://127.0.0.1:7860\n"
+printf "\nStudio Vocal Éboulé : http://127.0.0.1:7860\n"
 printf "La reference audio n'est pas publiee dans GitHub.\n"
 printf "Pour générer une narration, installez aussi le moteur si nécessaire :\n"
 printf "  python -m pip install -r requirements-clonage.txt\n\n"
