@@ -1,4 +1,4 @@
-"""Tests de l'intégration de la voix privée dans le Studio vocal DEEG.
+"""Tests de l'intégration de la voix privée dans le Studio Vocal Éboulé.
 
 Aucun accès au modèle Chatterbox n'est nécessaire pour ces tests.
 """

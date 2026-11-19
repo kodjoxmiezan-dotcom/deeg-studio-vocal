@@ -1,4 +1,4 @@
-name: DEEG - Comparatif de 5 voix francaises
+name: Studio Vocal Éboulé - Comparatif de 5 voix françaises
 
 on:
   workflow_dispatch:
@@ -7,7 +7,7 @@ on:
         description: "Court texte commun aux 5 voix (sans donnees personnelles)"
         required: true
         type: string
-        default: "Bienvenue dans le studio vocal DEEG. Ensemble, construisons une ecole plus equitable et inclusive."
+        default: "Bienvenue dans le Studio Vocal Éboulé. Ensemble, construisons une ecole plus equitable et inclusive."
       vitesse:
         description: "Vitesse commune (%)"
         required: true

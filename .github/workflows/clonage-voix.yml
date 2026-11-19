@@ -13,7 +13,7 @@ on:
         description: "Phrase d'essai (vide = fichier narrations/texte.txt)"
         required: false
         type: string
-        default: "Bienvenue dans le studio vocal DEEG. Ensemble, construisons une école plus équitable."
+        default: "Bienvenue dans le Studio Vocal Éboulé. Ensemble, construisons une école plus équitable."
       vitesse:
         description: "Vitesse de lecture (85 recommande)"
         required: true

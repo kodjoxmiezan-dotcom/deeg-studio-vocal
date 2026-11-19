@@ -7,7 +7,7 @@ on:
         description: "Court texte français d'essai (500 caractères max)"
         type: string
         required: true
-        default: "Bienvenue dans le studio vocal DEEG. Une école équitable commence par une attention à chaque élève."
+        default: "Bienvenue dans le Studio Vocal Éboulé. Une école équitable commence par une attention à chaque élève."
       vitesse:
         description: "Vitesse de lecture (85 = posée)"
         type: choice

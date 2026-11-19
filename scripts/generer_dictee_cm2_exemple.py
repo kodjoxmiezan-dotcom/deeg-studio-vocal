@@ -1,5 +1,5 @@
 """Pilote EXPERT PRÉPA CM2 : dictée lente et ponctuation lue.
-Utilise la synthèse Edge TTS déjà choisie dans Studio Vocal DEEG.
+Utilise la synthèse Edge TTS déjà choisie dans Studio Vocal Éboulé.
 """
 from pathlib import Path
 import subprocess, wave, json
@@ -64,7 +64,7 @@ def main():
     assemble(seq,OUT/'EXPERT_PREPA_CM2_S01_A_MODELE_COMPLET.mp3')
     (OUT/'TEXTE_REFERENCE_ENSEIGNANT.txt').write_text(TITLE+'\n\n'+ORIGINAL+'\n',encoding='utf-8')
     (OUT/'parametres.json').write_text(json.dumps({
-        'moteur':'Studio vocal DEEG / Edge TTS','voix':VOICE,
+        'moteur':'Studio Vocal Éboulé / Edge TTS','voix':VOICE,
         'lecture_complete_pct':60,'phrases_pct':69,'repetitions':3,
         'pause_entre_repetitions_s':4,'pause_entre_phrases_s':10,
         'annonces_numerotees':False,

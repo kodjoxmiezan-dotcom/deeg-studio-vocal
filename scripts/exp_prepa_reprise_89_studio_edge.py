@@ -1,4 +1,4 @@
-"""EXPERT PRÉPA CM2: complément des dictées manquantes dans Studio Vocal DEEG.
+"""EXPERT PRÉPA CM2: complément des dictées manquantes dans Studio Vocal Éboulé.
 Deux voix Edge natives du dépôt, clairement identifiées comme VOIX DE SECOURS.
 AUCUNE prétention de reproduire les timbres HeyGen déjà retenus.
 
@@ -178,7 +178,7 @@ async def build(record, code):
     audio.export(target_file, format="mp3", bitrate="96k")
     result = {
         "id": record["id"], "titre": title, "voix": code,
-        "moteur": "Studio DEEG / Edge TTS",
+        "moteur": "Studio Vocal Éboulé / Edge TTS",
         "voix_technique": voice, "voix_anterieure_preservee": False,
         "statut": "PRODUIT_TECHNIQUEMENT_NON_VALIDE_A_L_ECOUTE",
         "fichier": target_file.name, "duree_s": round(len(audio) / 1000, 2),

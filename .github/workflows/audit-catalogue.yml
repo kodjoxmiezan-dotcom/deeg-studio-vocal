@@ -1,8 +1,9 @@
-name: Audit catalogue vocal DEEG
+name: Studio Vocal Éboulé - Audit du catalogue
 
 on:
   push:
     paths:
+      - tests/test_identite_studio.py
       - profils_vocaux/catalogue.json
       - scripts/generer.py
       - tests/test_catalogue_voix.py
@@ -11,6 +12,7 @@ on:
       - .github/workflows/audit-catalogue.yml
   pull_request:
     paths:
+      - tests/test_identite_studio.py
       - profils_vocaux/catalogue.json
       - scripts/generer.py
       - tests/test_catalogue_voix.py
@@ -31,5 +33,5 @@ jobs:
         with:
           python-version: "3.11"
       - run: python -m pip install pytest
-      - run: python -m pytest -q tests/test_utils.py tests/test_catalogue_voix.py
+      - run: python -m pytest -q tests/test_utils.py tests/test_catalogue_voix.py tests/test_identite_studio.py
       - run: python -m py_compile scripts/generer.py
