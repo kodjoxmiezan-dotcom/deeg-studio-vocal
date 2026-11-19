@@ -1,10 +1,10 @@
-# DEEG Studio Vocal 🎙️
+# Studio Vocal Éboulé 🎙️
 
 Studio de synthèse vocale en français pour la formation DEEG, indépendant de l’application pédagogique.
 
 ## Démarrage rapide (GitHub Actions)
 
-1. Ouvrez l’onglet **Actions** puis **Studio vocal DEEG**.
+1. Ouvrez l’onglet **Actions** puis **Studio Vocal Éboulé**.
 2. Cliquez sur **Run workflow** ; choisissez `edge`, la voix `fr-FR-HenriNeural` et la vitesse `85`.
 3. Laissez le champ texte vide pour utiliser `narrations/texte.txt`, ou collez un court passage.
 4. Après réussite, ouvrez l’exécution et téléchargez **Artifacts → narration-deeg-…** : les fichiers MP3, WAV, SRT, texte et rapport JSON sont inclus.
@@ -29,7 +29,7 @@ Le fichier [`profils_vocaux/catalogue.json`](profils_vocaux/catalogue.json) déc
 
 ### Lancer une narration depuis un navigateur — sans rien installer sur Mac
 
-1. Ouvrir **Actions → Studio vocal DEEG → Run workflow**.
+1. Ouvrir **Actions → Studio Vocal Éboulé → Run workflow**.
 2. Choisir `moteur = edge` ou `piper`, puis la **voix_catalogue** correspondante.
 3. Coller le texte dans `texte`, régler la vitesse (85 % conseillé), puis lancer.
 4. Télécharger les fichiers MP3, WAV et SRT sous les **Artifacts** de l'exécution.
@@ -125,7 +125,7 @@ Un profil distinct est prêt pour un essai de synthèse vocale conditionnée sur
 
 ### Utiliser cette voix dans le Studio vocal principal
 
-Le moteur `voix_video` est également disponible sous **Actions → Studio vocal DEEG → Run workflow**.
+Le moteur `voix_video` est également disponible sous **Actions → Studio Vocal Éboulé → Run workflow**.
 Après avoir configuré le secret `DEEG_VIDEO_VOICE_REFERENCE_URL` décrit dans le guide,
 choisir **moteur : voix_video**, saisir une phrase de **500 caractères maximum**, conserver
 la vitesse **85**, le début de référence **0**, puis confirmer l'autorisation de reproduire
@@ -149,7 +149,7 @@ La reproduction d'une voix nécessite l'autorisation appropriée.
 
 ## Interface graphique locale (français)
 
-Le Studio Vocal DEEG dispose également d'une **interface dans votre navigateur**,
+Le Studio Vocal Éboulé dispose également d'une **interface dans votre navigateur**,
 sans envoyer la voix de référence sur un serveur distant. Sur un ordinateur
 équipé de Python 3.11 et FFmpeg :
 
