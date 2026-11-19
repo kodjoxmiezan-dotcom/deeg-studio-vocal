@@ -1,4 +1,4 @@
-"""Interface française locale pour le Studio Vocal DEEG.
+"""Interface française locale pour le Studio Vocal Éboulé.
 
 L'interface écoute UNIQUEMENT sur 127.0.0.1 ; les références vocales ne sont
 jamais envoyées vers GitHub. La première génération nécessite les poids
@@ -127,8 +127,8 @@ def creer_interface():
     source_initiale = os.getenv("DEEG_REFERENCE_INITIALE", "").strip()
     if source_initiale and not Path(source_initiale).is_file():
         source_initiale = ""
-    with gr.Blocks(title="Studio Vocal DEEG — Voix vidéo", css=couleurs) as demo:
-        gr.HTML('<div class="deeg-titre"><h1>🎙️ STUDIO VOCAL DEEG</h1>'
+    with gr.Blocks(title="Studio Vocal Éboulé — Voix vidéo", css=couleurs) as demo:
+        gr.HTML('<div class="deeg-titre"><h1>🎙️ STUDIO VOCAL ÉBOULÉ</h1>'
                 '<p>Création de narrations en français à partir de votre '
                 'référence vocale — mode privé sur cet ordinateur.</p></div>')
         gr.Markdown(
