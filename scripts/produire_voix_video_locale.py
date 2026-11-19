@@ -22,7 +22,7 @@ from preparer_reference_video import preparer
 from generer import check_speed, duration_seconds, estimate_srt
 
 ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_TEXTE = "Bienvenue dans le studio vocal DEEG. Ensemble, construisons une école plus équitable."
+DEFAULT_TEXTE = "Bienvenue dans le Studio Vocal Éboulé. Ensemble, construisons une école plus équitable."
 
 
 def verifier_texte(texte: str) -> str:
