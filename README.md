@@ -1,6 +1,8 @@
 # Studio Vocal Éboulé 🎙️
 
-Studio de synthèse vocale en français pour la formation DEEG, indépendant de l’application pédagogique.
+Studio de synthèse vocale et de narration en français pour les productions pédagogiques **DEEG**, **EXPERT PRÉPA** et les autres projets Éboulé.
+
+Le dépôt GitHub conserve l'identifiant technique `deeg-studio-vocal` afin de préserver ses liens et automatisations existants. Le **nom public du studio** est désormais **Studio Vocal Éboulé**. Les noms des fichiers audio, identifiants et secrets techniques DEEG restent inchangés pour assurer la compatibilité.
 
 ## Démarrage rapide (GitHub Actions)
 
