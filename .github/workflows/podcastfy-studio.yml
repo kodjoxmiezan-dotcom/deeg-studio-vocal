@@ -1,0 +1,116 @@
+name: Studio Vocal Éboulé - Créer un podcast (Podcastfy)
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "dialogue = gratuit sans clé ; ia_gemini = dialogue généré par Gemini (facultatif)"
+        type: choice
+        options:
+          - dialogue
+          - ia_gemini
+        required: true
+        default: dialogue
+      dialogue:
+        description: "Mode dialogue : ANIMATRICE: ... | EXPERT: ... (vide = exemple du dépôt)"
+        required: false
+        type: string
+        default: ""
+      texte_source:
+        description: "Mode ia_gemini : texte source à transformer (vide = exemple du dépôt)"
+        required: false
+        type: string
+        default: ""
+      voix_animatrice:
+        description: "Voix numéro 1"
+        type: choice
+        options:
+          - fr-FR-DeniseNeural
+          - fr-FR-EloiseNeural
+          - fr-FR-VivienneMultilingualNeural
+          - fr-FR-HenriNeural
+          - fr-FR-RemyMultilingualNeural
+        default: fr-FR-DeniseNeural
+      voix_expert:
+        description: "Voix numéro 2"
+        type: choice
+        options:
+          - fr-FR-HenriNeural
+          - fr-FR-RemyMultilingualNeural
+          - fr-FR-DeniseNeural
+          - fr-FR-EloiseNeural
+          - fr-FR-VivienneMultilingualNeural
+        default: fr-FR-HenriNeural
+      autoriser_api:
+        description: "Je comprends que le mode Gemini peut consommer un quota ou entraîner des frais selon mon compte"
+        type: boolean
+        required: true
+        default: false
+  push:
+    branches:
+      - fonctionnalites/podcastfy-2-voix-2026-11
+    paths:
+      - .github/workflows/podcastfy-studio.yml
+      - requirements-podcastfy.txt
+      - scripts/podcastfy_studio.py
+      - podcasts/exemple_dialogue.txt
+      - podcasts/exemple_source.txt
+      - tests/test_podcastfy_studio.py
+
+permissions:
+  contents: read
+
+concurrency:
+  group: studio-podcastfy-${{ github.ref }}-${{ github.event_name }}
+  cancel-in-progress: false
+
+jobs:
+  podcast:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      PODCAST_MODE: ${{ inputs.mode || 'dialogue' }}
+      PODCAST_DIALOGUE: ${{ inputs.dialogue || '' }}
+      PODCAST_SOURCE: ${{ inputs.texte_source || '' }}
+      PODCAST_VOIX_A: ${{ inputs.voix_animatrice || 'fr-FR-DeniseNeural' }}
+      PODCAST_VOIX_B: ${{ inputs.voix_expert || 'fr-FR-HenriNeural' }}
+      PODCAST_AUTORISATION_API: ${{ inputs.autoriser_api || 'false' }}
+      HF_HUB_DISABLE_TELEMETRY: "1"
+    steps:
+      - name: Récupérer le code du studio
+        uses: actions/checkout@v4
+      - name: Installer Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Vérifier la qualité du module (sans accès API)
+        run: |
+          python -m pip install pytest
+          python -m pytest -q tests/test_podcastfy_studio.py
+          python -m py_compile scripts/podcastfy_studio.py
+      - name: Vérifier la présence des outils audio
+        run: |
+          if ! command -v ffmpeg >/dev/null || ! command -v ffprobe >/dev/null; then
+            sudo apt-get update -qq
+            sudo apt-get install -y ffmpeg
+          fi
+      - name: Installer Podcastfy (dépendances optionnelles, aucun appel API automatique)
+        run: |
+          python -m pip install -r requirements-podcastfy.txt
+      - name: Générer le podcast en français
+        env:
+          GEMINI_API_KEY: ${{ secrets.PODCAST_GEMINI_API_KEY }}
+        run: python scripts/podcastfy_studio.py
+      - name: Publier MP3 WAV transcription SRT et diagnostic
+        uses: actions/upload-artifact@v4
+        with:
+          name: studio-eboule-podcastfy-${{ github.run_number }}
+          path: |
+            podcasts/sorties/studio_eboule_podcast.mp3
+            podcasts/sorties/studio_eboule_podcast.wav
+            podcasts/sorties/studio_eboule_podcast.srt
+            podcasts/sorties/transcription_podcastfy.txt
+            podcasts/sorties/dialogue_lisible.txt
+            podcasts/sorties/rapport.json
+          if-no-files-found: error
+          retention-days: 7
