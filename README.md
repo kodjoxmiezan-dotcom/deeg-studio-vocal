@@ -66,6 +66,43 @@ Kokoro constitue un **quatrième moteur** à essayer, distinct des moteurs Edge,
 
 La première exécution télécharge les poids du modèle sur un exécuteur GitHub, ce qui peut être lent ou échouer. Cet essai n'est pas validé pour une utilisation de production tant que la synthèse, l'intonation, les coûts et les droits de diffusion n'ont pas été contrôlés. Kokoro-82M est publié sous licence Apache-2.0 : [fiche du modèle](https://huggingface.co/hexgrad/Kokoro-82M). Le pilote est isolé dans `scripts/essai_kokoro_fr.py` et `requirements-kokoro.txt`.
 
+## 🎙️ Podcastfy — créer un podcast à deux voix en français
+
+Cette fonctionnalité utilise le vrai moteur open source [Podcastfy.ai](https://github.com/souzatharsis/podcastfy) (licence Apache-2.0), avec **Microsoft Edge TTS** pour lire le dialogue en français. **Aucun abonnement ni clé API n'est nécessaire en mode dialogue.** Les éventuels quotas et limitations du service Edge peuvent évoluer.
+
+### Démarrer gratuitement depuis le navigateur
+
+1. Ouvrir **Actions → Studio Vocal Éboulé - Créer un podcast (Podcastfy) → Run workflow**.
+2. Conserver `mode = dialogue`. Laisser le champ `dialogue` vide pour l'exemple prêt à produire.
+3. Choisir deux voix françaises différentes, par défaut Denise (animatrice) et Henri (expert).
+4. Cliquer sur **Run workflow** et télécharger l'artefact `studio-eboule-podcastfy-...` après réussite : MP3, WAV, transcription, SRT estimé et rapport technique.
+
+Pour rédiger un épisode à partir de ton propre dialogue, utilise une alternance stricte :
+
+```text
+ANIMATRICE: Bonjour à toutes et à tous. Quel est notre sujet aujourd'hui ?
+EXPERT: Nous allons expliquer les principes d'une école inclusive.
+ANIMATRICE: Pourquoi ce sujet est-il important ?
+EXPERT: Parce que tous les enfants doivent avoir leur chance d'apprendre.
+```
+
+Sur une seule ligne dans GitHub Actions, remplace les retours à la ligne par ` | ` entre les répliques. Le fichier public d'exemple est [`podcasts/exemple_dialogue.txt`](podcasts/exemple_dialogue.txt). Les noms `ANIMATEUR`, `EXPERTE`, `INVITÉ` sont également acceptés.
+
+### Mode IA facultatif : transformer un texte source en podcast
+
+Pour générer le dialogue automatiquement avec **Gemini**, il faut configurer le secret GitHub `PODCAST_GEMINI_API_KEY`, choisir `mode = ia_gemini`, ajouter le contenu source (ou utiliser l'exemple), puis cocher `autoriser_api`. Sans secret ni autorisation explicite, ce mode refuse de démarrer. La clé est uniquement utilisée pour la génération du dialogue ; **Edge produit toujours la voix**.
+
+**Attention au coût :** Gemini peut proposer des quotas gratuits selon ton offre, ton modèle et ta région, mais la gratuité n'est pas garantie. Ce module ne déclenche **aucun abonnement ou achat** ; vérifie tes paramètres de facturation avant d'activer l'option.
+
+### Confidentialité, qualité et limites
+
+- Le dépôt est **public** : les textes soumis à GitHub Actions, les journaux d'exécution et les artefacts ne constituent pas un environnement privé. Ne jamais transmettre de données d'élèves, de documents confidentiels ou d'enregistrements vocaux sensibles.
+- Les sous-titres SRT sont **estimés** à partir de la durée ; vérifier le minutage avant le montage.
+- Les dialogues IA doivent être relus et validés avant diffusion. Cette première intégration accepte du texte saisi ; l'import de PDF et de liens web pourra être ajouté ensuite.
+- Aucun changement aux moteurs de synthèse ou aux workflows existants de DEEG et EXPERT PRÉPA.
+
+Dépendance optionnelle : `requirements-podcastfy.txt` ; code d'intégration : `scripts/podcastfy_studio.py` ; tests : `tests/test_podcastfy_studio.py`.
+
 ## Modifier les textes depuis ChatGPT
 
 Demandez dans ChatGPT : « Dans mon dépôt GitHub `kodjoxmiezan-dotcom/deeg-studio-vocal`, remplace `narrations/texte.txt` par [votre texte] ». Le commit peut déclencher GitHub Actions. Les fichiers générés apparaissent dans les *Artifacts* de l'exécution.
