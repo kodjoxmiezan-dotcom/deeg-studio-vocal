@@ -1,0 +1,5 @@
+# Première intégration de Podcastfy dans Studio Vocal Éboulé.
+# Le mode dialogue nécessite uniquement Edge TTS, sans clé d'IA générative.
+# La dépendance Podcastfy peut installer d'autres fournisseurs, mais ils ne
+# sont pas invoqués dans notre mode gratuit.
+podcastfy==0.4.3
