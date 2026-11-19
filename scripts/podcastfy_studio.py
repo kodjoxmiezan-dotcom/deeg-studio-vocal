@@ -72,12 +72,12 @@ def lignes_dialogue(texte: str) -> list[tuple[str, str]]:
     texte = (texte or "").strip()
     if not texte or len(texte) > 10000:
         raise ValueError("Dialogue vide ou trop long : 10 000 caractères maximum.")
-    lignes = [part.strip() for part in re.split(r"\\r?\\n|\\s+\\|\\s+", texte) if part.strip()]
+    lignes = [part.strip() for part in re.split(r"\r?\n|\s+\|\s+", texte) if part.strip()]
     if len(lignes) < 2 or len(lignes) > 40 or len(lignes) % 2:
         raise ValueError("Prévoir de 1 à 20 paires ANIMATRICE puis EXPERT.")
     tours = []
     for i, ligne in enumerate(lignes):
-        match = re.fullmatch(r"([^:：]+)[:：]\\s*(.+)", ligne, flags=re.DOTALL)
+        match = re.fullmatch(r"([^:：]+)[:：]\s*(.+)", ligne, flags=re.DOTALL)
         if not match:
             raise ValueError(f"Ligne {i + 1} : utiliser ANIMATRICE: texte ou EXPERT: texte.")
         etiquette = match.group(1).strip().upper()
@@ -94,21 +94,21 @@ def lignes_dialogue(texte: str) -> list[tuple[str, str]]:
 
 
 def baliser(tours: list[tuple[str, str]]) -> str:
-    return "\\n".join(
+    return "\n".join(
         f"<{speaker}>{html.escape(texte, quote=False)}</{speaker}>"
         for speaker, texte in tours
-    ) + "\\n"
+    ) + "\n"
 
 
 def dialogue_lisible(tours: list[tuple[str, str]]) -> str:
-    return "\\n".join(
+    return "\n".join(
         f"{'ANIMATRICE' if speaker == 'Person1' else 'EXPERT'} : {texte}"
         for speaker, texte in tours
-    ) + "\\n"
+    ) + "\n"
 
 
 def extraire_dialogue_balise(texte: str) -> list[tuple[str, str]]:
-    expression = r"<(Person1|Person2)>(.*?)</\\1>"
+    expression = r"<(Person1|Person2)>(.*?)</\1>"
     resultat = [
         (speaker, html.unescape(" ".join(contenu.split())))
         for speaker, contenu in re.findall(expression, texte, flags=re.DOTALL)
@@ -183,7 +183,7 @@ def sous_titres(tours: list[tuple[str, str]], duree: float, cible: Path) -> None
         for i, ((speaker, texte), p) in enumerate(zip(tours, poids), start=1):
             fin = duree if i == len(tours) else min(duree, t + duree * p / total)
             label = "Animatrice" if speaker == "Person1" else "Expert"
-            fichier.write(f"{i}\\n{horodatage(t)} --> {horodatage(fin)}\\n{label} : {texte}\\n\\n")
+            fichier.write(f"{i}\n{horodatage(t)} --> {horodatage(fin)}\n{label} : {texte}\n\n")
             t = fin
 
 
@@ -274,7 +274,7 @@ def produire() -> dict:
         "confidentialite": "GitHub Actions sur dépôt public : les artefacts ne sont pas privés",
     }
     (SORTIES / "rapport.json").write_text(
-        json.dumps(rapport, ensure_ascii=False, indent=2) + "\\n", encoding="utf-8"
+        json.dumps(rapport, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
     )
     print(f"Podcast créé : {mp3} ({duree:.1f} s).")
     return rapport
