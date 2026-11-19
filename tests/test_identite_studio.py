@@ -22,7 +22,7 @@ def test_identite_de_marque():
     for fichier in PRESENTATION:
         source = (ROOT / fichier).read_text(encoding="utf-8")
         assert NAME in source, f"Marque manquante dans {fichier}"
-        assert re.search(r"(studio\\s+vocal\\s+deeg|deeg\\s+studio\\s+vocal|studio\\s+deeg)", source, re.I) is None, fichier
+        assert re.search(r"(studio\s+vocal\s+deeg|deeg\s+studio\s+vocal|studio\s+deeg)", source, re.I) is None, fichier
 
 
 def test_identifiants_deeg_preserves():
