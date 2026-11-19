@@ -12,3 +12,8 @@ sorties-video-local/
 sorties-module*/
 sorties-questions*/
 .venv/
+
+# Podcasts temporaires et identifiants privés
+podcasts/sorties/
+.env
+.env.*
