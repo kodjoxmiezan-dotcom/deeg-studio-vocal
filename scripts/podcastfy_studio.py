@@ -202,22 +202,24 @@ def produire() -> dict:
     SORTIES.mkdir(parents=True, exist_ok=True)
     cfg = configuration(voix_a, voix_b)
 
-    # L'import de Podcastfy est différé, afin que les tests légers n'installent
-    # ni modèle lourd ni dépendances réseau.
-    from podcastfy.client import generate_podcast
-
+    # Le mode gratuit utilise directement le fournisseur TTS de Podcastfy.
+    # Ainsi, son import n'exige pas les extracteurs web/Playwright de Podcastfy.
     if mode == "dialogue":
+        from podcastfy.text_to_speech import TextToSpeech
         contenu = os.getenv("PODCAST_DIALOGUE", "").strip() or EXEMPLE.read_text(encoding="utf-8")
         tours = lignes_dialogue(contenu)
         texte_balise = baliser(tours)
         transcription = SORTIES / "transcription_podcastfy.txt"
         transcription.write_text(texte_balise, encoding="utf-8")
-        chemin_audio = generate_podcast(
-            transcript_file=str(transcription),
-            tts_model="edge",
-            conversation_config=cfg,
+        chemin_audio = SORTIES / "audio" / "podcastfy_direct.mp3"
+        chemin_audio.parent.mkdir(parents=True, exist_ok=True)
+        TextToSpeech(model="edge", conversation_config=cfg).convert_to_speech(
+            texte_balise, str(chemin_audio)
         )
     else:
+        # Le mode automatique utilise l'API principale de Podcastfy, avec IA
+        # explicitement autorisée et une clé fournie par secret GitHub.
+        from podcastfy.client import generate_podcast
         contenu = (
             os.getenv("PODCAST_SOURCE", "").strip()
             or EXEMPLE_SOURCE.read_text(encoding="utf-8")
