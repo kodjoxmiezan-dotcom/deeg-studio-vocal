@@ -217,32 +217,39 @@ def produire() -> dict:
             texte_balise, str(chemin_audio)
         )
     else:
-        # Le mode automatique utilise l'API principale de Podcastfy, avec IA
-        # explicitement autorisée et une clé fournie par secret GitHub.
-        from podcastfy.client import generate_podcast
+        # Utilise le générateur de dialogues et le TTS de Podcastfy.
+        # L'appel à Gemini exige l'autorisation et le secret validés en tête.
+        # Ne charge pas les modules d'extraction web facultatifs de Podcastfy.
+        from podcastfy.content_generator import ContentGenerator
+        from podcastfy.text_to_speech import TextToSpeech
+
         contenu = (
             os.getenv("PODCAST_SOURCE", "").strip()
             or EXEMPLE_SOURCE.read_text(encoding="utf-8")
         )
         texte_source = source_validee(contenu)
-        anciens = set((SORTIES / "transcripts").glob("*.txt"))
-        chemin_audio = generate_podcast(
-            text=texte_source,
-            tts_model="edge",
-            conversation_config=cfg,
-            llm_model_name="gemini-2.5-flash",
+        transcription = SORTIES / "transcription_podcastfy.txt"
+        texte_balise = ContentGenerator(
+            is_local=False,
+            model_name="gemini-2.5-flash",
             api_key_label="GEMINI_API_KEY",
+            conversation_config=cfg,
+        ).generate_qa_content(
+            texte_source,
+            output_filepath=str(transcription),
             longform=False,
         )
-        nouveaux = list(set((SORTIES / "transcripts").glob("*.txt")) - anciens)
-        if len(nouveaux) != 1:
-            raise RuntimeError("Transcription IA introuvable ou ambiguë après génération.")
-        texte_balise = nouveaux[0].read_text(encoding="utf-8")
-        transcription = SORTIES / "transcription_podcastfy.txt"
+        if not isinstance(texte_balise, str) or not texte_balise.strip():
+            raise RuntimeError("L'IA n'a pas produit de transcription.")
         transcription.write_text(texte_balise, encoding="utf-8")
         tours = extraire_dialogue_balise(texte_balise)
         if not tours:
             raise RuntimeError("Dialogue IA non conforme au format Podcastfy.")
+        chemin_audio = SORTIES / "audio" / "podcastfy_direct.mp3"
+        chemin_audio.parent.mkdir(parents=True, exist_ok=True)
+        TextToSpeech(model="edge", conversation_config=cfg).convert_to_speech(
+            texte_balise, str(chemin_audio)
+        )
 
     if not chemin_audio or not Path(chemin_audio).is_file():
         raise RuntimeError("Podcastfy n'a pas retourné de fichier audio exploitable.")
