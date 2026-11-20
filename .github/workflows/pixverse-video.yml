@@ -98,7 +98,7 @@ jobs:
     env:
       PIXVERSE_OPERATION: ${{ inputs.operation || 'simulation' }}
       PIXVERSE_MODE: ${{ inputs.mode || 'texte' }}
-      PIXVERSE_PROMPT: ${{ inputs.prompt || "Plan large d'une cour d'école primaire paisible, lumière du matin, mouvement des feuilles, sans dialogue." }}
+      PIXVERSE_PROMPT: ${{ inputs.prompt }}
       PIXVERSE_IMG_ID: ${{ inputs.image_id || '' }}
       PIXVERSE_DUREE: ${{ inputs.duree || '5' }}
       PIXVERSE_QUALITE: ${{ inputs.qualite || '360p' }}
