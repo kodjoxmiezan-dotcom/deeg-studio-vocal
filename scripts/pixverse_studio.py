@@ -179,10 +179,9 @@ def executer(environ: dict | None = None) -> dict:
         return r
 
     mode = env.get("PIXVERSE_MODE", "texte").strip()
-    prompt = env.get(
-        "PIXVERSE_PROMPT",
+    prompt = env.get("PIXVERSE_PROMPT") or (
         "Plan large d'une cour d'école primaire paisible au soleil du matin ; "
-        "caméra fixe et mouvement léger des feuilles, scène documentaire.",
+        "caméra fixe et mouvement léger des feuilles, scène documentaire."
     )
     duree = int(env.get("PIXVERSE_DUREE", "5"))
     qualite = env.get("PIXVERSE_QUALITE", "360p")
