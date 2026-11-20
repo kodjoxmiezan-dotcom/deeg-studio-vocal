@@ -103,6 +103,18 @@ Pour générer le dialogue automatiquement avec **Gemini**, il faut configurer l
 
 Dépendance optionnelle : `requirements-podcastfy.txt` ; code d'intégration : `scripts/podcastfy_studio.py` ; tests : `tests/test_podcastfy_studio.py`.
 
+## 🎬 PixVerse — vidéo IA (pilotage optionnel)
+
+Le studio possède maintenant un **connecteur PixVerse API v2** pour préparer des scènes « texte → vidéo » ou « image → vidéo ». Ce connecteur est séparé de Podcastfy, Edge, Piper, Chatterbox et Kokoro.
+
+**Démarrage gratuit :** ouvrir **Actions → Studio Audiovisuel Éboulé - PixVerse (simulation par défaut) → Run workflow**, conserver `operation = simulation`, décrire la scène et consulter le rapport JSON. Cette opération **ne génère pas de vidéo** et ne débite **aucun crédit**.
+
+La création réelle demande une clé `PIXVERSE_API_KEY` placée dans les secrets du dépôt, `operation = generation`, l'autorisation explicite des crédits et un plafond de coût indicatif supérieur ou égal au barème officiel. **Le plafond local n'est pas un plafond de facturation garanti par PixVerse.** Le modèle V6 sans audio est seul disponible dans ce premier module.
+
+Pour les images, PixVerse exige un `img_id` obtenu après téléversement préalable dans sa plateforme. La fonction de téléversement depuis le Mac ou Google Flow n'est pas encore incluse. Les vidéos créées restent sur PixVerse ; le workflow ne télécharge pas automatiquement les MP4 et ne publie pas les liens privés sans option explicite.
+
+Consulter le [**guide complet PixVerse**](pixverse/README.md) et la [**liste des onze solutions audiovisuelles**](INTEGRATIONS_AUDIOVISUEL.md).
+
 ## Modifier les textes depuis ChatGPT
 
 Demandez dans ChatGPT : « Dans mon dépôt GitHub `kodjoxmiezan-dotcom/deeg-studio-vocal`, remplace `narrations/texte.txt` par [votre texte] ». Le commit peut déclencher GitHub Actions. Les fichiers générés apparaissent dans les *Artifacts* de l'exécution.
