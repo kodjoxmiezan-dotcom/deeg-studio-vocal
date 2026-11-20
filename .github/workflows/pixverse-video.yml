@@ -1,0 +1,133 @@
+name: Studio Audiovisuel Éboulé - PixVerse (simulation par défaut)
+
+on:
+  workflow_dispatch:
+    inputs:
+      operation:
+        description: "Simulation gratuite, génération avec crédits ou vérification d'un ID existant"
+        required: true
+        type: choice
+        options:
+          - simulation
+          - statut
+          - generation
+        default: simulation
+      mode:
+        description: "Texte vers vidéo ou animation d'une image PixVerse déjà importée"
+        required: true
+        type: choice
+        options:
+          - texte
+          - image
+        default: texte
+      prompt:
+        description: "Décris le plan à produire (texte public dans GitHub Actions)"
+        required: true
+        type: string
+        default: "Plan large d'une cour d'école primaire au soleil du matin, sans dialogue, mouvement naturel des arbres, caméra fixe."
+      image_id:
+        description: "Mode image : identifiant img_id PixVerse obtenu depuis la plateforme (facultatif en texte)"
+        required: false
+        type: string
+        default: ""
+      duree:
+        description: "Durée en secondes (V6)"
+        type: choice
+        options:
+          - "5"
+          - "8"
+          - "10"
+        default: "5"
+      qualite:
+        description: "Qualité (plus élevée = davantage de crédits)"
+        type: choice
+        options:
+          - 360p
+          - 540p
+          - 720p
+          - 1080p
+        default: 360p
+      ratio:
+        description: "Format du film (utilisé pour texte vers vidéo)"
+        type: choice
+        options:
+          - "16:9"
+          - "9:16"
+          - "1:1"
+          - "4:3"
+          - "3:4"
+        default: "16:9"
+      video_id:
+        description: "Mode statut : identifiant de la vidéo déjà générée"
+        type: string
+        required: false
+        default: ""
+      autoriser_credits:
+        description: "Je confirme vouloir consommer des crédits API PixVerse pour cette génération"
+        type: boolean
+        required: true
+        default: false
+      plafond_indicatif:
+        description: "Credits prévus au maximum (0 par défaut bloque toute génération)"
+        type: string
+        required: true
+        default: "0"
+      publier_url:
+        description: "Publier l'URL de sortie dans un artefact public GitHub (NON par défaut)"
+        type: boolean
+        required: true
+        default: false
+  push:
+    branches:
+      - fonctionnalites/pixverse-video-2026-11
+    paths:
+      - scripts/pixverse_studio.py
+      - tests/test_pixverse_studio.py
+      - .github/workflows/pixverse-video.yml
+
+permissions:
+  contents: read
+
+jobs:
+  pixverse:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    concurrency:
+      group: pixverse-${{ github.ref }}-${{ github.event_name }}
+      cancel-in-progress: false
+    env:
+      PIXVERSE_OPERATION: ${{ inputs.operation || 'simulation' }}
+      PIXVERSE_MODE: ${{ inputs.mode || 'texte' }}
+      PIXVERSE_PROMPT: ${{ inputs.prompt }}
+      PIXVERSE_IMG_ID: ${{ inputs.image_id || '' }}
+      PIXVERSE_DUREE: ${{ inputs.duree || '5' }}
+      PIXVERSE_QUALITE: ${{ inputs.qualite || '360p' }}
+      PIXVERSE_RATIO: ${{ inputs.ratio || '16:9' }}
+      PIXVERSE_VIDEO_ID: ${{ inputs.video_id || '' }}
+      PIXVERSE_AUTORISATION: ${{ inputs.autoriser_credits || 'false' }}
+      PIXVERSE_CREDITS_MAX: ${{ inputs.plafond_indicatif || '0' }}
+      PIXVERSE_PUBLIER_URL: ${{ inputs.publier_url || 'false' }}
+    steps:
+      - name: Récupérer le studio
+        uses: actions/checkout@v4
+      - name: Installer Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Exécuter les tests sans réseau ni débit
+        run: |
+          python -m pip install pytest
+          python -m pytest -q tests/test_pixverse_studio.py
+          python -m py_compile scripts/pixverse_studio.py
+      - name: Simulation ou action PixVerse explicitement sélectionnée
+        env:
+          PIXVERSE_API_KEY: ${{ secrets.PIXVERSE_API_KEY }}
+        run: python scripts/pixverse_studio.py
+      - name: Mettre le rapport dans Artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: studio-eboule-pixverse-${{ github.run_number }}
+          path: pixverse/sorties/rapport_pixverse.json
+          if-no-files-found: warn
+          retention-days: 7
